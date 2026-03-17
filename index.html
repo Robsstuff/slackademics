@@ -562,8 +562,7 @@ function renderSpeech(){
 // --- PLAY EFFORT ---
 function renderPlayEffort(){
   const p=humanPlayer();
-  const hand=sortedHand(p.hand.filter(c=>c!=='X2'));
-  const hasX2=p.hand.includes('X2');
+  const hand=sortedHand(p.hand);
   const fair=Math.round(G.exam.effort/getActive().length);
   const cards=hand.map(c=>{
     const sel=G.humanEffort===c?'selected':'';
@@ -576,8 +575,7 @@ function renderPlayEffort(){
     <div class="notif warn">Pick 1 card for the group effort pile. It will be shuffled in anonymously.</div>
     <div style="background:#252547;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:0.82rem;color:#68d391">Fair share: ~${fair} &nbsp;|&nbsp; Effort needed: ${G.exam.effort} &nbsp;|&nbsp; ${getActive().length} players active</div>
     <div class="label">Your Hand (click to select):</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${cards}</div>
-    ${hasX2?`<div class="notif" style="margin-bottom:10px;font-size:0.8rem">${scHtml('X2')} X2 can only be played by AI players — it doubles the next card revealed.</div>`:''}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${cards}</div>
     <div class="label">Your Party Pile (so far):</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">${partyCards}</div>
   </div>
