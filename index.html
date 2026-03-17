@@ -7,21 +7,21 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
-#app{max-width:920px;margin:0 auto;padding:16px}
+#app{max-width:920px;margin:0 auto;padding:8px}
 @keyframes popIn{from{transform:scale(0.8);opacity:0}50%{transform:scale(1.05)}to{transform:scale(1);opacity:1}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes cardReveal{from{transform:rotateY(90deg);opacity:0}to{transform:rotateY(0);opacity:1}}
 .fade-in{animation:fadeIn 0.25s ease-out}
 
 /* TITLE */
-.title-screen{text-align:center;padding:60px 20px}
-.game-title{font-size:3.2rem;font-weight:900;color:#7c6ff7;letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 30px rgba(124,111,247,0.5);margin-bottom:6px}
-.game-subtitle{font-size:0.95rem;color:#718096;margin-bottom:40px;letter-spacing:2px;text-transform:uppercase}
-.name-input{background:#1a1a3e;border:2px solid #2d2d5e;color:#e2e8f0;padding:14px 20px;font-size:1.1rem;border-radius:8px;width:280px;margin-bottom:20px;outline:none;transition:border-color 0.2s}
+.title-screen{text-align:center;padding:24px 12px}
+.game-title{font-size:2rem;font-weight:900;color:#7c6ff7;letter-spacing:3px;text-transform:uppercase;text-shadow:0 0 20px rgba(124,111,247,0.5);margin-bottom:4px}
+.game-subtitle{font-size:0.8rem;color:#718096;margin-bottom:20px;letter-spacing:1px;text-transform:uppercase}
+.name-input{background:#1a1a3e;border:2px solid #2d2d5e;color:#e2e8f0;padding:10px 14px;font-size:1rem;border-radius:8px;width:240px;margin-bottom:14px;outline:none;transition:border-color 0.2s}
 .name-input:focus{border-color:#7c6ff7}
 
 /* BUTTONS */
-.btn{border:none;border-radius:8px;padding:11px 26px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.15s;letter-spacing:0.4px}
+.btn{border:none;border-radius:8px;padding:9px 18px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;letter-spacing:0.3px}
 .btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 .btn:active{transform:translateY(0)}
 .btn-primary{background:#7c6ff7;color:#fff}
@@ -35,7 +35,7 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .btn-group.center{justify-content:center}
 
 /* STATUS BAR */
-.status-bar{background:#1a1a3e;border:1px solid #2d2d5e;border-radius:12px;padding:12px 16px;margin-bottom:16px}
+.status-bar{background:#1a1a3e;border:1px solid #2d2d5e;border-radius:10px;padding:8px 10px;margin-bottom:10px}
 .status-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
 .badge{display:inline-block;padding:3px 12px;border-radius:20px;font-weight:700;font-size:0.8rem}
 .badge-purple{background:#553c9a;color:#e9d8fd}
@@ -43,7 +43,7 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .badge-green{background:#1c4532;color:#68d391}
 .badge-red{background:#742a2a;color:#feb2b2}
 .player-rows{display:flex;flex-direction:column;gap:2px}
-.pr{display:grid;grid-template-columns:120px 60px 55px 55px 70px 1fr;gap:6px;align-items:center;padding:5px 4px;border-radius:6px;font-size:0.82rem}
+.pr{display:grid;grid-template-columns:90px 44px 38px 38px 50px 1fr;gap:4px;align-items:center;padding:4px 3px;border-radius:6px;font-size:0.75rem}
 .pr:nth-child(odd){background:rgba(255,255,255,0.03)}
 .pr.is-leader{background:rgba(124,111,247,0.12);border-left:3px solid #7c6ff7}
 .pr.eliminated{opacity:0.38}
@@ -56,7 +56,7 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .status-hint{font-size:0.75rem;color:#4a5568;margin-top:6px}
 
 /* SMALL CARD */
-.sc{display:inline-flex;align-items:center;justify-content:center;width:38px;height:52px;border-radius:6px;font-weight:900;font-size:0.88rem;flex-shrink:0;border:2px solid transparent;transition:all 0.15s}
+.sc{display:inline-flex;align-items:center;justify-content:center;width:32px;height:44px;border-radius:5px;font-weight:900;font-size:0.8rem;flex-shrink:0;border:2px solid transparent;transition:all 0.15s}
 .sc.playable{cursor:pointer}
 .sc.playable:hover{transform:translateY(-5px);border-color:#fff}
 .sc.selected{transform:translateY(-7px);border-color:#7c6ff7;box-shadow:0 0 10px rgba(124,111,247,0.7)}
@@ -75,7 +75,7 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .sc-last{background:#252547;color:#ed8936;border:2px dashed #ed8936;font-size:1rem}
 
 /* REVEAL CARD (larger) */
-.rc{display:inline-flex;align-items:center;justify-content:center;width:58px;height:80px;border-radius:10px;font-weight:900;font-size:1.2rem;flex-shrink:0;border:2px solid transparent}
+.rc{display:inline-flex;align-items:center;justify-content:center;width:44px;height:60px;border-radius:8px;font-weight:900;font-size:1rem;flex-shrink:0;border:2px solid transparent}
 .rc-0{background:#2d3748;color:#718096}
 .rc-1{background:#742a2a;color:#feb2b2}
 .rc-2{background:#7b341e;color:#fbd38d}
@@ -91,8 +91,8 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .rc-new{animation:cardReveal 0.35s ease-out}
 
 /* PANELS */
-.panel{background:#1a1a3e;border:1px solid #2d2d5e;border-radius:12px;padding:16px;margin-bottom:14px}
-.panel-title{font-size:1rem;font-weight:800;color:#7c6ff7;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.panel{background:#1a1a3e;border:1px solid #2d2d5e;border-radius:10px;padding:10px;margin-bottom:10px}
+.panel-title{font-size:0.88rem;font-weight:800;color:#7c6ff7;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
 
 /* EXAM CARD */
 .exam-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
@@ -189,7 +189,31 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 .mb-12{margin-bottom:12px}
 .mb-16{margin-bottom:16px}
 .row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
-.label{font-size:0.78rem;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.label{font-size:0.75rem;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600}
+
+@media(max-width:480px){
+  #app{padding:5px}
+  .status-bar{padding:6px 7px;margin-bottom:7px}
+  .status-top{gap:4px;margin-bottom:6px}
+  .badge{font-size:0.7rem;padding:2px 8px}
+  .pr{grid-template-columns:80px 38px 34px 34px 44px 1fr;gap:3px;font-size:0.7rem;padding:3px 2px}
+  .status-hint{display:none}
+  .panel{padding:8px;margin-bottom:7px}
+  .panel-title{font-size:0.8rem;margin-bottom:6px}
+  .btn{padding:8px 14px;font-size:0.82rem}
+  .btn-group{gap:6px;margin-top:10px}
+  .exam-layout{grid-template-columns:1fr}
+  .exam-img{min-height:120px;max-height:150px}
+  .result-title{font-size:2rem}
+  .result-banner{padding:20px 12px}
+  .halftime-title{font-size:1.6rem}
+  .reveal-pile{gap:5px;padding:10px}
+  .effort-progress{font-size:0.9rem;padding:7px}
+  .notif{padding:6px 10px;font-size:0.78rem}
+  .game-title{font-size:1.6rem;letter-spacing:2px}
+  .scores-table th,.scores-table td{padding:6px 8px;font-size:0.78rem}
+  .speech-input{font-size:0.85rem}
+}
 </style>
 </head>
 <body>
@@ -235,13 +259,24 @@ function rand(a){return a[Math.floor(Math.random()*a.length)]}
 function randInt(lo,hi){return lo+Math.floor(Math.random()*(hi-lo+1))}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-function computeEffort(pile, x3x2=false){
-  const nums = pile.filter(c=>typeof c==='number').sort((a,b)=>b-a);
-  const x2 = pile.filter(c=>c==='X2').length;
-  let t = nums.reduce((s,c)=>s+c,0);
-  const mult = x3x2?3:2;
-  for(let i=0;i<Math.min(x2,nums.length);i++) t+=nums[i]*(mult-1);
-  return t;
+function computeEffort(pile, x3x2=false, trailingX2is7=false){
+  // X2 doubles (or triples if x3x2) the next numeric card revealed after it.
+  // If X2 is the very last card in the pile (face-down revealed), it scores as 7.
+  const mult = x3x2 ? 3 : 2;
+  let total = 0;
+  let pending = false;
+  for(let i=0; i<pile.length; i++){
+    const c = pile[i];
+    const isLast = i === pile.length-1;
+    if(c === 'X2'){
+      if(isLast && trailingX2is7){ total += pending ? 7*mult : 7; pending=false; }
+      else { pending = true; }
+    } else if(typeof c === 'number'){
+      total += pending ? c*mult : c;
+      pending = false;
+    }
+  }
+  return total;
 }
 
 function sortedHand(h){return [...h].sort((a,b)=>{if(a==='X2')return 1;if(b==='X2')return -1;return a-b})}
@@ -295,7 +330,11 @@ function aiPickParty(p, exclude){
   let ch=p.hand.filter(c=>c!=='X2'&&c!==exclude);
   if(!ch.length) ch=p.hand.filter(c=>c!=='X2');
   if(!ch.length) return null;
-  return Math.max(...ch);
+  ch.sort((a,b)=>b-a);
+  const r=Math.random();
+  if(r<0.4) return ch[0];                                      // 40%: highest
+  if(r<0.7) return ch.length>1?ch[1]:ch[0];                   // 30%: second highest
+  return ch[Math.floor(Math.random()*ch.length)];              // 30%: random
 }
 
 // ============================================================
@@ -523,7 +562,8 @@ function renderSpeech(){
 // --- PLAY EFFORT ---
 function renderPlayEffort(){
   const p=humanPlayer();
-  const hand=sortedHand(p.hand);
+  const hand=sortedHand(p.hand.filter(c=>c!=='X2'));
+  const hasX2=p.hand.includes('X2');
   const fair=Math.round(G.exam.effort/getActive().length);
   const cards=hand.map(c=>{
     const sel=G.humanEffort===c?'selected':'';
@@ -536,7 +576,8 @@ function renderPlayEffort(){
     <div class="notif warn">Pick 1 card for the group effort pile. It will be shuffled in anonymously.</div>
     <div style="background:#252547;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:0.82rem;color:#68d391">Fair share: ~${fair} &nbsp;|&nbsp; Effort needed: ${G.exam.effort} &nbsp;|&nbsp; ${getActive().length} players active</div>
     <div class="label">Your Hand (click to select):</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${cards}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${cards}</div>
+    ${hasX2?`<div class="notif" style="margin-bottom:10px;font-size:0.8rem">${scHtml('X2')} X2 can only be played by AI players — it doubles the next card revealed.</div>`:''}
     <div class="label">Your Party Pile (so far):</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">${partyCards}</div>
   </div>
@@ -591,7 +632,7 @@ function renderReveal(){
   const progressClass=revTotal>=G.finalReq?'ep-pass':diff<=3?'ep-mid':'ep-fail';
   const progressHtml=`<div class="effort-progress"><span class="${progressClass}">${revTotal} / ${G.finalReq}</span> &nbsp;<span class="text-muted">${allButLastRevealed?'(one card face-down)':diff>0?`need ${diff} more`:'already passing!'}</span></div>`;
 
-  const x2note=revealed.filter(c=>c==='X2').length?`<div class="notif warn" style="font-size:0.8rem">X2 doubles the highest card in the pile!</div>`:'';
+  const x2note=revealed.filter(c=>c==='X2').length?`<div class="notif warn" style="font-size:0.8rem">X2 doubles the next card revealed after it! (If X2 is the last card, it scores as 7.)</div>`:'';
 
   return renderStatusBar()+renderLog()+
   `<div class="panel">
@@ -1108,7 +1149,7 @@ function doAiDeadline(){
 function doLetItRide(){
   // Reveal final card and compute total
   G.finalPile=[...G.effortPile];
-  G.finalTotal=computeEffort(G.finalPile,G.x3x2);
+  G.finalTotal=computeEffort(G.finalPile,G.x3x2,true);
   const pass=G.finalTotal>=G.finalReq;
   G.passResult=pass;
   clearLog();
