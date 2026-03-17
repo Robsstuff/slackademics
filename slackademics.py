@@ -218,28 +218,31 @@ class Player:
         numeric = sorted([c for c in self.hand if isinstance(c, int)])
         has_x2 = "X2" in self.hand
 
+        if not numeric and not has_x2:
+            return None
         if not numeric:
-            return "X2" if has_x2 else None
+            return "X2"
 
         fair = effort_req / max(num_active, 1)
-        # Target: slack fraction of what THIS player needs to contribute if others
-        # are also slacking (each contributing ~80% of fair share).
-        # This makes the AI aware that everyone is slacking, so it contributes a bit more.
-        others_est = (num_active - 1) * fair * 0.80
-        needed = max(0, effort_req - others_est)
-        target = needed * self.slack + random.uniform(-1.0, 1.0)
-        target = max(0, target)
+        roll = random.randint(0, 3)
 
-        # Consider X2 as an option once hand is half-depleted (spreads X2 use out).
-        # Estimate X2 value as fair share (it doubles the highest card, typically ~fair).
-        candidates = list(numeric)
-        if has_x2 and len(self.hand) <= 4:
-            x2_virtual = fair
-            candidates_scored = [(c, abs(c - target)) for c in numeric]
-            candidates_scored.append(("X2", abs(x2_virtual - target)))
-            return min(candidates_scored, key=lambda x: x[1])[0]
+        # Strategy 0 (25%): Play X2 — reroll 1-3 if X2 already used
+        if roll == 0:
+            if has_x2:
+                return "X2"
+            roll = random.randint(1, 3)
 
-        return min(numeric, key=lambda c: abs(c - target))
+        # Strategy 1 (25%): Asshole — play lowest card to effort pile
+        if roll == 1:
+            return min(numeric)
+
+        # Strategy 2 (25%): Fair share — play card closest to effort_req / num_active
+        if roll == 2:
+            return min(numeric, key=lambda c: abs(c - fair))
+
+        # Strategy 3 (25%): Generous — random card at or above fair share
+        above = [c for c in numeric if c >= fair]
+        return random.choice(above) if above else max(numeric)
 
     def ai_pick_party(self, exclude):
         choices = [c for c in self.hand if c != "X2" and c != exclude]
