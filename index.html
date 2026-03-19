@@ -259,21 +259,28 @@ function rand(a){return a[Math.floor(Math.random()*a.length)]}
 function randInt(lo,hi){return lo+Math.floor(Math.random()*(hi-lo+1))}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-function computeEffort(pile, x3x2=false, trailingX2is7=false){
-  // X2 doubles (or triples if x3x2) the next numeric card revealed after it.
-  // If X2 is the very last card in the pile (face-down revealed), it scores as 7.
-  const mult = x3x2 ? 3 : 2;
+function computeEffort(pile, x3x2=false){
+  // X2 stacks multiplicatively with the NEXT numeric card revealed after it.
+  // Two consecutive X2s = x4 on the next numeric card.
+  // X2 as the last card in the pile = scores as 7 (with any accumulated multiplier).
+  // X2 in party pile = 0 (party total ignores non-numeric, so already handled).
+  const base = x3x2 ? 3 : 2;
   let total = 0;
-  let pending = false;
+  let multiplier = 1; // stacks as X2s chain
   for(let i=0; i<pile.length; i++){
     const c = pile[i];
     const isLast = i === pile.length-1;
     if(c === 'X2'){
-      if(isLast && trailingX2is7){ total += pending ? 7*mult : 7; pending=false; }
-      else { pending = true; }
+      if(isLast){
+        // Last card X2 counts as 7, applying any accumulated multiplier
+        total += 7 * multiplier;
+        multiplier = 1;
+      } else {
+        multiplier *= base; // stack: X2 then X2 = x4
+      }
     } else if(typeof c === 'number'){
-      total += pending ? c*mult : c;
-      pending = false;
+      total += c * multiplier;
+      multiplier = 1;
     }
   }
   return total;
@@ -379,6 +386,8 @@ function initGame(humanName){
     extendNewPile:[],
     allNighterTargets:[],
     allNighterQueue:[],
+    revealRunning:false,
+    _revealTimer:null,
     blameAccused:null,
     blameVoters:[],
     blameVoterIdx:0,
@@ -402,6 +411,8 @@ function clearLog(){G.log=[]}
 
 function startRound(){
   clearLog();
+  if(G._revealTimer){clearTimeout(G._revealTimer);G._revealTimer=null;}
+  G.revealRunning=false;
   G.aiMessages=[];
   G.usedSkill=false;
   G.x3x2=false;
@@ -433,7 +444,6 @@ function renderPhase(){
   switch(G.phase){
     case 'title': return renderTitle();
     case 'round_start': return renderRoundStart();
-    case 'speech': return renderSpeech();
     case 'play_effort': return renderPlayEffort();
     case 'play_party': return renderPlayParty();
     case 'reveal': return renderReveal();
@@ -537,7 +547,7 @@ function renderRoundStart(){
     </div>
     ${G.skillsAvailable.length?`<div class="text-muted">Available skills: ${G.skillsAvailable.map(s=>`<span class="text-purple">${esc(s)}</span>`).join(', ')}</div>`:'<div class="text-muted">No leadership skills available yet. Earn them by passing rounds without using a skill.</div>'}
   </div>
-  <div class="btn-group"><button class="btn btn-primary" onclick="action('to_speech')">Give Motivational Speech &rarr;</button></div>`;
+  <div class="btn-group"><button class="btn btn-primary" onclick="action('play_cards')">Play Cards &rarr;</button></div>`;
 }
 
 // --- SPEECH ---
@@ -565,21 +575,19 @@ function renderPlayEffort(){
   const hand=sortedHand(p.hand);
   const fair=Math.round(G.exam.effort/getActive().length);
   const cards=hand.map(c=>{
-    const sel=G.humanEffort===c?'selected':'';
-    return `<span class="sc ${cardSCClass(c)} playable ${sel}" onclick="action('pick_effort',${JSON.stringify(c)})">${cardLabel(c)}</span>`;
+    return `<span class="sc ${cardSCClass(c)} playable" onclick="action('confirm_effort',${JSON.stringify(c)})">${cardLabel(c)}</span>`;
   }).join('');
   const partyCards=p.partyPile.length?sortedHand(p.partyPile).map(c=>scHtml(c)).join(''):'<span class="text-muted">empty</span>';
   return renderStatusBar()+
   `<div class="panel">
     <div class="panel-title">Play Your Cards &mdash; Effort Pile</div>
-    <div class="notif warn">Pick 1 card for the group effort pile. It will be shuffled in anonymously.</div>
+    <div class="notif warn">Tap a card to play it to the effort pile — no take-backs!</div>
     <div style="background:#252547;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:0.82rem;color:#68d391">Fair share: ~${fair} &nbsp;|&nbsp; Effort needed: ${G.exam.effort} &nbsp;|&nbsp; ${getActive().length} players active</div>
-    <div class="label">Your Hand (click to select):</div>
+    <div class="label">Your Hand:</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${cards}</div>
     <div class="label">Your Party Pile (so far):</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">${partyCards}</div>
-  </div>
-  ${G.humanEffort!==null?`<div class="btn-group"><button class="btn btn-success" onclick="action('confirm_effort')">Confirm Effort Card (${cardLabel(G.humanEffort)}) &rarr;</button></div>`:''}`;
+  </div>`;
 }
 
 // --- PLAY PARTY ---
@@ -589,49 +597,56 @@ function renderPlayParty(){
   const nonX2=remaining.filter(c=>c!=='X2');
   const hand=sortedHand(nonX2);
   const cards=hand.map(c=>{
-    const sel=G.humanParty===c?'selected':'';
-    return `<span class="sc ${cardSCClass(c)} playable ${sel}" onclick="action('pick_party',${JSON.stringify(c)})">${cardLabel(c)}</span>`;
+    return `<span class="sc ${cardSCClass(c)} playable" onclick="action('confirm_party_direct',${JSON.stringify(c)})">${cardLabel(c)}</span>`;
   }).join('');
   if(!hand.length){
-    return renderStatusBar()+`<div class="panel"><div class="panel-title">Play Your Cards &mdash; Party Pile</div><div class="notif">No valid party cards (only X2 left — it can't go to your Party Pile).</div></div><div class="btn-group"><button class="btn btn-primary" onclick="action('confirm_party_none')">Continue &rarr;</button></div>`;
+    return renderStatusBar()+`<div class="panel"><div class="panel-title">Play Your Cards &mdash; Party Pile</div><div class="notif">No valid party cards (only X2 left — it scores 0 in your Party Pile).</div></div><div class="btn-group"><button class="btn btn-primary" onclick="action('confirm_party_none')">Continue &rarr;</button></div>`;
   }
   return renderStatusBar()+
   `<div class="panel">
     <div class="panel-title">Play Your Cards &mdash; Party Pile</div>
-    <div class="notif warn">Pick 1 card for your Party Pile. Higher cards = more points!</div>
-    <div class="notif" style="border-color:#48bb78;color:#9ae6b4;background:rgba(72,187,120,0.08)">Effort card chosen: ${scHtml(G.humanEffort)}</div>
-    <div class="label">Choose Party Card (click):</div>
+    <div class="notif warn">Tap a card to play it to your Party Pile — no take-backs!</div>
+    <div class="notif" style="border-color:#48bb78;color:#9ae6b4;background:rgba(72,187,120,0.08)">Effort card played: ${scHtml(G.humanEffort)}</div>
+    <div class="label">Choose Party Card:</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${cards}</div>
-  </div>
-  ${G.humanParty!==null?`<div class="btn-group"><button class="btn btn-success" onclick="action('confirm_party')">Play ${cardLabel(G.humanParty)} to Party Pile &rarr;</button></div>`:''}`;
+  </div>`;
 }
 
 // --- REVEAL ---
 function renderReveal(){
   const pile=G.effortPile;
   const revealed=pile.slice(0,G.revealIdx);
-  const remaining=pile.slice(G.revealIdx);
   const lastIdx=pile.length-1;
   const allButLastRevealed=(G.revealIdx>=lastIdx);
   const revTotal=computeEffort(revealed,G.x3x2);
   const diff=G.finalReq-revTotal;
 
+  // Build pile display — show revealed cards, hidden slots, then always a face-down last card
   let pileHtml='';
   revealed.forEach((c,i)=>{
     const isNewest=(i===G.revealIdx-1);
+    // Highlight if an X2 is pending (next card after X2 hasn't shown yet)
+    const pendingX2=(i>0&&pile[i-1]==='X2'&&c!=='X2');
     pileHtml+=rcHtml(c,isNewest?'rc-new':'');
   });
   if(!allButLastRevealed){
-    remaining.slice(0,-1).forEach(()=>{ pileHtml+=`<span class="rc rc-hidden">?</span>` });
+    pile.slice(G.revealIdx,-1).forEach(()=>{ pileHtml+=`<span class="rc rc-hidden">?</span>`; });
   }
-  // always show last card face-down until deadline
   pileHtml+=`<span class="rc rc-last" title="Face-down last card">?</span>`;
 
   const progressClass=revTotal>=G.finalReq?'ep-pass':diff<=3?'ep-mid':'ep-fail';
   const progressHtml=`<div class="effort-progress"><span class="${progressClass}">${revTotal} / ${G.finalReq}</span> &nbsp;<span class="text-muted">${allButLastRevealed?'(one card face-down)':diff>0?`need ${diff} more`:'already passing!'}</span></div>`;
 
-  const x2note=revealed.filter(c=>c==='X2').length?`<div class="notif warn" style="font-size:0.8rem">X2 doubles the next card revealed after it! (If X2 is the last card, it scores as 7.)</div>`:'';
+  // Show X2 multiplier status
+  let pendingMult=1;
+  for(let i=0;i<G.revealIdx;i++){
+    if(pile[i]==='X2') pendingMult*=(G.x3x2?3:2);
+    else if(typeof pile[i]==='number') pendingMult=1;
+  }
+  const x2note=pendingMult>1?`<div class="notif warn" style="font-size:0.8rem">X${pendingMult} active — next card revealed will be multiplied!</div>`:
+    revealed.filter(c=>c==='X2').length?`<div class="notif warn" style="font-size:0.8rem">X2 doubles the next card revealed. Stacks if chained. Last card X2 = 7.</div>`:'';
 
+  const isRunning=G.revealRunning;
   return renderStatusBar()+renderLog()+
   `<div class="panel">
     <div class="panel-title">The Reveal &mdash; ${esc(G.exam.name)}</div>
@@ -639,13 +654,36 @@ function renderReveal(){
     <div class="reveal-pile">${pileHtml}</div>
     ${x2note}
     ${allButLastRevealed
-      ?`<div class="notif ok">All cards revealed! One face-down card remains. Proceeding to Day of the Deadline...</div><div class="btn-group"><button class="btn btn-primary" onclick="action('to_deadline')">Day of the Deadline &rarr;</button></div>`
-      :`<div class="btn-group">
-          <button class="btn btn-primary" onclick="action('reveal_next')">Reveal Next Card</button>
-          <button class="btn btn-muted" onclick="action('skip_reveal')">Skip to Last</button>
-        </div>`
+      ?`<div class="notif ok">All cards revealed! One face-down card remains.</div><div class="btn-group"><button class="btn btn-primary" onclick="action('to_deadline')">Day of the Deadline &rarr;</button></div>`
+      :isRunning
+        ?`<div class="notif" style="font-size:0.82rem">Revealing...</div>`
+        :`<div class="btn-group">
+            <button class="btn btn-primary" onclick="action('start_reveal')">Reveal Cards</button>
+          </div>`
     }
   </div>`;
+}
+
+function startAutoReveal(){
+  if(G._revealTimer) clearTimeout(G._revealTimer);
+  G.revealRunning=true;
+  function step(){
+    if(G.revealIdx<G.effortPile.length-1){
+      G.revealIdx++;
+      render();
+      if(G.revealIdx<G.effortPile.length-1){
+        G._revealTimer=setTimeout(step,1000);
+      } else {
+        // All but last revealed — pause briefly then go to deadline
+        G._revealTimer=setTimeout(()=>{
+          G.revealRunning=false;
+          G.phase='deadline';
+          render();
+        },1200);
+      }
+    }
+  }
+  step();
 }
 
 // --- DEADLINE ---
@@ -988,16 +1026,12 @@ function renderEnd(){
 function action(name, data){
   switch(name){
     case 'start': doStart(); break;
-    case 'to_speech': doToSpeech(); break;
-    case 'give_speech': doGiveSpeech(); break;
     case 'play_cards': doPlayCards(); break;
-    case 'pick_effort': G.humanEffort=data; render(); break;
-    case 'confirm_effort': doConfirmEffort(); break;
-    case 'pick_party': G.humanParty=data; render(); break;
+    case 'confirm_effort': doConfirmEffort(data); break;
+    case 'confirm_party_direct': G.humanParty=data; doConfirmParty(); break;
     case 'confirm_party': doConfirmParty(); break;
     case 'confirm_party_none': doConfirmParty(true); break;
-    case 'reveal_next': doRevealNext(); break;
-    case 'skip_reveal': doSkipReveal(); break;
+    case 'start_reveal': G.revealRunning=false; startAutoReveal(); break;
     case 'to_deadline': G.phase='deadline'; render(); break;
     case 'ai_deadline': doAiDeadline(); break;
     case 'let_it_ride': doLetItRide(); break;
@@ -1071,8 +1105,8 @@ function doPlayCards(){
   render();
 }
 
-function doConfirmEffort(){
-  if(G.humanEffort===null) return;
+function doConfirmEffort(card){
+  G.humanEffort=card;
   removeFromArr(humanPlayer().hand,G.humanEffort);
   G.phase='play_party';
   G.humanParty=null;
@@ -1147,7 +1181,7 @@ function doAiDeadline(){
 function doLetItRide(){
   // Reveal final card and compute total
   G.finalPile=[...G.effortPile];
-  G.finalTotal=computeEffort(G.finalPile,G.x3x2,true);
+  G.finalTotal=computeEffort(G.finalPile,G.x3x2);
   const pass=G.finalTotal>=G.finalReq;
   G.passResult=pass;
   clearLog();
