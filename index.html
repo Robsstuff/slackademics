@@ -321,13 +321,27 @@ function drawExtraCredit(){return {...rand(EXTRA_CREDIT_CARDS)}}
 // Refill pool helpers
 function initRefillPool(){return shuffle([...REFILL_PAIRS])}
 function checkRefill(p){
-  if(p.eliminated) return;
-  if(p.hand.length<=2 && G.refillPool.length>0){
+  // AI only — draws 2 pairs automatically
+  if(p.eliminated||p.hand.length>2) return;
+  for(let i=0;i<2;i++){
+    if(!G.refillPool.length) G.refillPool=initRefillPool();
     const pair=G.refillPool.pop();
     p.hand.push(...pair);
-    addLog(`${p.name} refills hand: +${pair[0]} and +${pair[1]}`);
-    if(G.refillPool.length===0) G.refillPool=initRefillPool(); // restock
+    addLog(`${p.name} draws ${pair[0]} + ${pair[1]}`);
   }
+}
+// Returns true if human needs a refill (interrupts flow for UI)
+function checkAllRefills(returnPhase){
+  getActive().forEach(p=>{ if(!p.isHuman) checkRefill(p); });
+  const human=humanPlayer();
+  if(human&&!human.eliminated&&human.hand.length<=2){
+    G.refillReturnPhase=returnPhase||'reveal';
+    G.refillPicksLeft=2;
+    G.phase='refill_pick';
+    render();
+    return true;
+  }
+  return false;
 }
 
 // ============================================================
@@ -479,6 +493,7 @@ function renderPhase(){
     case 'result': return renderResult();
     case 'blame_accuse': return renderBlameAccuse();
     case 'blame_vote': return renderBlameVote();
+    case 'refill_pick': return renderRefillPick();
     case 'round_end': return renderRoundEnd();
     case 'halftime': return renderHalftime();
     case 'end': return renderEnd();
@@ -920,6 +935,37 @@ function renderNominateEC(){
   </div>`+renderStatusBar();
 }
 
+// --- REFILL PICK ---
+function renderRefillPick(){
+  const human=humanPlayer();
+  const pairs=G.refillPool.map((pair,i)=>{
+    const label=pair.map(c=>c==='X2'?'X2':c).join(' + ');
+    return `<button class="btn btn-primary" style="margin:6px;min-width:90px" onclick="action('pick_refill_pair',${i})">${label}</button>`;
+  }).join('');
+  return `<div class="blame-box">
+    <div class="blame-title">Refill Your Hand</div>
+    <div class="notif">Your hand is running low. Pick a pair (picks left: <strong>${G.refillPicksLeft}</strong>). Each pair sums to 8.</div>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px">${pairs}</div>
+    <div class="notif warn" style="margin-top:8px">Your current hand: ${human.hand.map(c=>c).join(', ')}</div>
+  </div>`+renderStatusBar();
+}
+
+function doPickRefillPair(idx){
+  const pair=G.refillPool.splice(idx,1)[0];
+  if(!pair) return;
+  const human=humanPlayer();
+  human.hand.push(...pair);
+  addLog(`You draw: ${pair[0]} and ${pair[1]}`,'ok');
+  G.refillPicksLeft--;
+  if(G.refillPool.length===0) G.refillPool=initRefillPool();
+  if(G.refillPicksLeft<=0){
+    G.phase=G.refillReturnPhase;
+    G.refillReturnPhase=null;
+    G.refillPicksLeft=0;
+  }
+  render();
+}
+
 // --- BLAME ACCUSE ---
 function renderBlameAccuse(){
   const leader=getLeader();
@@ -940,33 +986,38 @@ function renderBlameAccuse(){
   </div>`+renderStatusBar();
 }
 
-// --- BLAME VOTE (V3: human votes, then all revealed simultaneously) ---
+// --- BLAME VOTE (V3: vote accused vs project leader) ---
 function renderBlameVote(){
   const accused=G.blameAccused;
-  // Check if human still needs to vote
+  const leader=getLeader();
   const humanIsVoter=G.blameVoters.find(p=>p.isHuman);
   const humanVoted=humanIsVoter?G.blameVotes[humanIsVoter.name]!==undefined:true;
   if(!humanVoted){
     return `<div class="blame-box">
-      <div class="blame-title">Your Vote</div>
-      <div class="notif bad">Is <strong>${esc(accused.name)}</strong> responsible for the fail?</div>
-      <div class="btn-group">
-        <button class="btn btn-danger" onclick="action('human_vote',true)">GUILTY</button>
-        <button class="btn btn-muted" onclick="action('human_vote',false)">NOT GUILTY</button>
+      <div class="blame-title">Blame Vote</div>
+      <div class="notif bad">${esc(leader.name)} (Project Leader) accuses <strong>${esc(accused.name)}</strong>. Who should take the blame?</div>
+      <div class="btn-group" style="margin-top:10px">
+        <button class="btn btn-danger" onclick="action('human_vote','accused')">Blame ${esc(accused.name)}</button>
+        <button class="btn btn-muted" onclick="action('human_vote','leader')">Blame ${esc(leader.name)} (Leader)</button>
       </div>
     </div>`+renderStatusBar();
   }
   // All votes collected — reveal
-  const yesVotes=Object.values(G.blameVotes).filter(v=>v).length;
-  const noVotes=Object.values(G.blameVotes).filter(v=>!v).length;
+  const accusedVotes=Object.values(G.blameVotes).filter(v=>v==='accused').length;
+  const leaderVotes=Object.values(G.blameVotes).filter(v=>v==='leader').length;
   const voteRows=G.blameVoters.map(p=>{
     const v=G.blameVotes[p.name];
-    return `<div class="notif ${v?'bad':''}" style="margin-bottom:4px">${esc(p.name)}: <strong>${v?'GUILTY':'Not Guilty'}</strong></div>`;
+    const label=v==='accused'?`Blamed ${esc(accused.name)}`:`Blamed ${esc(leader.name)}`;
+    return `<div class="notif" style="margin-bottom:4px">${esc(p.name)}: <strong>${label}</strong></div>`;
   }).join('');
+  let outcome='';
+  if(accusedVotes>leaderVotes) outcome=`<div class="notif bad" style="margin-top:8px"><strong>${esc(accused.name)} is blamed!</strong> (${accusedVotes}-${leaderVotes})</div>`;
+  else if(leaderVotes>accusedVotes) outcome=`<div class="notif bad" style="margin-top:8px"><strong>${esc(leader.name)} (Leader) is blamed!</strong> (${leaderVotes}-${accusedVotes})</div>`;
+  else outcome=`<div class="notif warn" style="margin-top:8px"><strong>Tied vote — investigation required!</strong> Highest party card takes the blame.</div>`;
   return `<div class="blame-box">
     <div class="blame-title">Votes Revealed</div>
     ${voteRows}
-    <div class="notif warn" style="margin-top:8px">Guilty: ${yesVotes} &nbsp;|&nbsp; Not Guilty: ${noVotes}</div>
+    ${outcome}
   </div>
   <div class="btn-group"><button class="btn btn-primary" onclick="action('after_blame_vote')">Continue &rarr;</button></div>`+renderStatusBar();
 }
@@ -1073,6 +1124,7 @@ function action(name, data){
     case 'skip_blame': doSkipBlame(); break;
     case 'human_vote': doHumanVote(data); break;
     case 'after_blame_vote': doAfterBlameVote(); break;
+    case 'pick_refill_pair': doPickRefillPair(data); break;
     case 'pick_leader': doPickLeader(data); break;
     case 'next_round': doNextRound(); break;
     case 'start_second_half': doStartSecondHalf(); break;
@@ -1160,9 +1212,11 @@ function doConfirmParty(none=false){
   G.revealIdx=0;
   G.lastCard=effortPile[effortPile.length-1];
   // V3: check if any player needs a refill after playing cards
-  checkAllRefills();
-  G.phase='reveal';
-  render();
+  const refillInterrupted=checkAllRefills('reveal');
+  if(!refillInterrupted){
+    G.phase='reveal';
+    render();
+  }
 }
 
 function doRevealNext(){
@@ -1558,7 +1612,7 @@ function doAccuse(idx){
   G.blameVotes={};
   // AI voters vote immediately (secretly); human votes via UI
   G.blameVoters.forEach(p=>{
-    if(!p.isHuman) G.blameVotes[p.name]=Math.random()<0.55;
+    if(!p.isHuman) G.blameVotes[p.name]=Math.random()<0.5?'accused':'leader';
   });
   addLog(`${leader.name} accuses ${accused.name}!`,'bad');
   G.phase='blame_vote';
@@ -1571,24 +1625,44 @@ function doSkipBlame(){
   render();
 }
 
-function doHumanVote(guilty){
+function doHumanVote(choice){
   const human=humanPlayer();
-  G.blameVotes[human.name]=guilty;
-  render(); // will show results since human is now voted
+  G.blameVotes[human.name]=choice; // 'accused' or 'leader'
+  render();
+}
+
+function applyBlamePenalty(p){
+  discardTopParty(p);
+  p.failMarkers++;
+  if(p.failMarkers>=4&&!p.eliminated){p.eliminated=true;addLog(`${p.name} EXPELLED!`,'bad');}
+  addLog(`${p.name} is blamed: top party card discarded + 1 FAIL marker.`,'bad');
 }
 
 function doAfterBlameVote(){
   const accused=G.blameAccused;
-  const yesVotes=Object.values(G.blameVotes).filter(v=>v).length;
-  const noVotes=Object.values(G.blameVotes).filter(v=>!v).length;
-  const guilty=yesVotes>noVotes;
+  const leader=getLeader();
+  const accusedVotes=Object.values(G.blameVotes).filter(v=>v==='accused').length;
+  const leaderVotes=Object.values(G.blameVotes).filter(v=>v==='leader').length;
   clearLog();
-  if(guilty){
-    accused.failMarkers++;
-    if(accused.failMarkers>=4&&!accused.eliminated){accused.eliminated=true;addLog(`${accused.name} EXPELLED!`,'bad');}
-    addLog(`${yesVotes}-${noVotes} GUILTY — ${accused.name} gets an extra fail marker!`,'bad');
+  if(accusedVotes>leaderVotes){
+    applyBlamePenalty(accused);
+  } else if(leaderVotes>accusedVotes){
+    applyBlamePenalty(leader);
   } else {
-    addLog(`${yesVotes}-${noVotes} NOT GUILTY — no extra penalty.`,'ok');
+    // Tie: player(s) with highest top party card take the blame
+    const active=getActive();
+    let highest=-Infinity;
+    active.forEach(p=>{
+      const top=p.partyPile.length?p.partyPile[p.partyPile.length-1]:0;
+      const val=typeof top==='number'?top:0;
+      if(val>highest) highest=val;
+    });
+    const tied=active.filter(p=>{
+      const top=p.partyPile.length?p.partyPile[p.partyPile.length-1]:0;
+      return (typeof top==='number'?top:0)===highest;
+    });
+    addLog(`Tied vote! Players revealing party cards — highest takes blame.`,'warn');
+    tied.forEach(p=>applyBlamePenalty(p));
   }
   clearBlameState();
   G.phase='round_end';
@@ -1600,11 +1674,6 @@ function clearBlameState(){
   G.blameAccused=null;
   G._blameable=null;
   G.blameVotes={};
-}
-
-// V3: after each card played check if refill needed
-function checkAllRefills(){
-  getActive().forEach(p=>checkRefill(p));
 }
 
 function doNextRound(){
