@@ -976,6 +976,7 @@ function doPickRefillPair(idx){
     G.refillReturnPhase=null;
     G.refillPicksLeft=0;
     if(returnTo==='_next_round'){ doNextRoundContinue(); return; }
+    if(returnTo==='_second_half'){ startSecondHalf(); return; }
     G.phase=returnTo;
   }
   render();
@@ -1067,7 +1068,7 @@ function renderHalftime(){
     return `<tr><td>${i+1}. ${esc(p.name)}</td><td>${partyTotal(p)}</td><td>${extraCreditTotal(p)}</td><td><strong>${playerScore(p)}</strong></td><td style="font-size:0.75rem">${ec}</td></tr>`;
   }).join('');
   return `<div class="halftime-title">SEMESTER BREAK</div>
-  <div class="halftime-sub">Rounds 1&ndash;4 complete! Party piles revealed and locked in. New hands dealt.</div>
+  <div class="halftime-sub">Rounds 1&ndash;4 complete! Party piles revealed and locked in. Refill your hand if needed.</div>
   ${renderPartyPiles(true)}
   <div class="panel">
     <table class="scores-table">
@@ -1692,7 +1693,7 @@ function doNextRound(){
   clearLog();
   const active=getActive();
   if(active.length<=1){G.phase='end';render();return;}
-  if(G.roundNum===4){doHalftime();return;} // halftime rebuilds hands — no refill needed
+  if(G.roundNum===4){doHalftime();return;}
   G.roundNum++;
   if(G.roundNum>8){G.phase='end';render();return;}
   // Refill cards between rounds (not at halftime, not during play)
@@ -1740,11 +1741,10 @@ function doPickLeader(idx){
 
 function doHalftime(){
   const active=getActive();
-  // V3: lock in scores, reset party piles, deal fresh hands
+  // Lock in scores and reset party piles — hands carry over (refill pool replaces rebuild)
   active.forEach(p=>{
-    p.halftimePts=playerScore(p); // includes party + EC so far
+    p.halftimePts=playerScore(p);
     p.partyPile=[];
-    buildHand(p);
   });
   G.phase='halftime';
   render();
@@ -1752,7 +1752,20 @@ function doHalftime(){
 
 function doStartSecondHalf(){
   G.roundNum=5;
-  // simple clockwise for second half start — leader already set
+  // AI refills now; human gets UI if needed
+  getActive().forEach(p=>{ if(!p.isHuman) checkRefill(p); });
+  const human=humanPlayer();
+  if(human&&!human.eliminated&&human.hand.length<=2){
+    G.refillReturnPhase='_second_half';
+    G.refillPicksLeft=2;
+    G.phase='refill_pick';
+    render();
+    return;
+  }
+  startSecondHalf();
+}
+
+function startSecondHalf(){
   let tries=0;
   do{ G.leaderIdx=(G.leaderIdx+1)%4; tries++; }
   while(G.players[G.leaderIdx].eliminated&&tries<4);
