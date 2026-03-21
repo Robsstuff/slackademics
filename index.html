@@ -222,34 +222,38 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 // ============================================================
 // DATA
 // ============================================================
+// Group Project Cards (formerly "Exam Cards") — V3
 const EXAM_R1_4 = [
-  {name:"PHIL 101",desc:"Write a 1,000-word essay about the philosopher Haddaway's famous question: 'What is Love?'",effort:11,cel:2,skill:"Diversity is Our Strength",skillDesc:"+1 effort for each unique card value in the effort pile.",blame:"highest",slide:1},
-  {name:"SOC 102",desc:"Write a report on how exactly one person ends up doing all the group work.",effort:11,cel:2,skill:"Personal Responsibility",skillDesc:"The Project Leader swaps the final face-down card with one from their own hand.",blame:"highest",slide:2},
-  {name:"STAT 201",desc:"Prove statistically that 73% of all statistics are made up on the spot--including this one.",effort:12,cel:2,skill:"Realign Priorities",skillDesc:"Pick a player to swap the final face-down card with their top Party Pile card.",blame:"accuse",slide:3},
-  {name:"BIO 215",desc:"Memorize every organ in the human body, then forget them immediately after the exam.",effort:12,cel:2,skill:"Pull an All Nighter",skillDesc:"Pick 2 players: each plays an extra effort card from their hand (no party card this round).",blame:"accuse",slide:4},
-  {name:"MKTG 250",desc:"Create a campaign convincing people they need something they've lived without for 20 years.",effort:13,cel:2,skill:"Round of Coffee",skillDesc:"All effort pile cards with value 1 or 2 are doubled.",blame:"highest",slide:5},
-  {name:"CSCI 220",desc:"Write code that works perfectly... until the professor runs it.",effort:13,cel:2,skill:"Extend the Deadline",skillDesc:"Each player picks up a card from the effort pile, then replays an effort card face-up.",blame:"accuse",slide:6},
-  {name:"HIST 305",desc:"Explain a historical event through badly labeled maps and vague dates like 'the late 1800s.'",effort:14,cel:2,skill:"Plagiarize",skillDesc:"Any X2 cards in the effort pile become X3 instead.",blame:"highest",slide:7},
-  {name:"PSYC 290",desc:"Design an experiment proving that procrastination is a legitimate time management strategy.",effort:14,cel:2,skill:"Curve the Grade",skillDesc:"Subtract 6 from effort required. Add 6 to the next exam's effort.",blame:"accuse",slide:8},
+  {name:"PHIL 101",desc:"Write a 1,000-word essay about the philosopher Haddaway's famous question: 'What is Love?'",effort:11,blame:"highest",slide:1},
+  {name:"SOC 102",desc:"Write a report on how exactly one person ends up doing all the group work.",effort:11,blame:"highest",slide:2},
+  {name:"STAT 201",desc:"Prove statistically that 73% of all statistics are made up on the spot--including this one.",effort:12,blame:"accuse",slide:3},
+  {name:"BIO 215",desc:"Memorize every organ in the human body, then forget them immediately after the exam.",effort:12,blame:"accuse",slide:4},
+  {name:"MKTG 250",desc:"Create a campaign convincing people they need something they've lived without for 20 years.",effort:13,blame:"highest",slide:5},
+  {name:"CSCI 220",desc:"Write code that works perfectly... until the professor runs it.",effort:13,blame:"accuse",slide:6},
+  {name:"HIST 305",desc:"Explain a historical event through badly labeled maps and vague dates like 'the late 1800s.'",effort:14,blame:"highest",slide:7},
+  {name:"PSYC 290",desc:"Design an experiment proving that procrastination is a legitimate time management strategy.",effort:14,blame:"accuse",slide:8},
 ];
 const EXAM_R5_8 = [
-  {name:"ECON 302",desc:"Explain why textbooks cost $300 using supply and demand curves.",effort:15,cel:3,skill:"Diversity is Our Strength",skillDesc:"+1 effort for each unique card value in the effort pile.",blame:"highest",slide:9},
-  {name:"ENGR 401",desc:"Build a project where the math works but the physical object absolutely does not.",effort:15,cel:3,skill:"Personal Responsibility",skillDesc:"The Project Leader swaps the final face-down card with one from their own hand.",blame:"highest",slide:10},
-  {name:"ENGL 315",desc:"Write 5,000 words analyzing why the curtains were blue (the author just liked blue).",effort:16,cel:3,skill:"Realign Priorities",skillDesc:"Pick a player to swap the final face-down card with their top Party Pile card.",blame:"accuse",slide:11},
-  {name:"CHEM 340",desc:"Mix clear liquids together and explain why the result is somehow purple and mildly alarming.",effort:16,cel:3,skill:"Pull an All Nighter",skillDesc:"Pick 2 players: each plays an extra effort card from their hand (no party card this round).",blame:"accuse",slide:12},
-  {name:"BUSN 420",desc:"Analyze why Netflix keeps canceling good shows after one season. Cite your sources.",effort:17,cel:3,skill:"Round of Coffee",skillDesc:"All effort pile cards with value 1 or 2 are doubled.",blame:"highest",slide:13},
-  {name:"PHYS 350",desc:"Prove thermodynamics is real by explaining why your dorm room entropy only increases.",effort:17,cel:3,skill:"Extend the Deadline",skillDesc:"Each player picks up a card from the effort pile, then replays an effort card face-up.",blame:"accuse",slide:14},
-  {name:"ART 275",desc:"Create a piece of art and write a 3-page explanation of what it 'really' means.",effort:18,cel:3,skill:"Plagiarize",skillDesc:"Any X2 cards in the effort pile become X3 instead.",blame:"accuse",slide:15},
-  {name:"MUSC 380",desc:"Compose a symphony or just sample Pachelbel's Canon like everybody else does.",effort:21,cel:3,skill:"Leave the Group",skillDesc:"Discard the final face-down card (unrevealed). Reduce effort by 3. Immune from blame.",blame:"highest",slide:16},
+  {name:"ECON 302",desc:"Explain why textbooks cost $300 using supply and demand curves.",effort:15,blame:"highest",slide:9},
+  {name:"ENGR 401",desc:"Build a project where the math works but the physical object absolutely does not.",effort:15,blame:"highest",slide:10},
+  {name:"ENGL 315",desc:"Write 5,000 words analyzing why the curtains were blue (the author just liked blue).",effort:16,blame:"accuse",slide:11},
+  {name:"CHEM 340",desc:"Mix clear liquids together and explain why the result is somehow purple and mildly alarming.",effort:16,blame:"accuse",slide:12},
+  {name:"BUSN 420",desc:"Analyze why Netflix keeps canceling good shows after one season. Cite your sources.",effort:17,blame:"highest",slide:13},
+  {name:"PHYS 350",desc:"Prove thermodynamics is real by explaining why your dorm room entropy only increases.",effort:17,blame:"accuse",slide:14},
+  {name:"ART 275",desc:"Create a piece of art and write a 3-page explanation of what it 'really' means.",effort:18,blame:"accuse",slide:15},
+  {name:"MUSC 380",desc:"Compose a symphony or just sample Pachelbel's Canon like everybody else does.",effort:21,blame:"highest",slide:16},
 ];
 const ALL_SKILLS = ["Diversity is Our Strength","Personal Responsibility","Realign Priorities","Pull an All Nighter","Round of Coffee","Extend the Deadline","Plagiarize","Curve the Grade","Leave the Group"];
-const AI_SPEECHES = [
-  n=>`"${n}: Look, we just need to pass. Don't overthink it."`,
-  n=>`"${n}: Everyone just play a 3. I'm definitely going to. Probably."`,
-  n=>`"${n}: If we all pitch in a tiny bit, we'll totally nail this!"`,
-  n=>`"${n}: I have full confidence in this team. By which I mean myself."`,
-  n=>`"${n}: This one's easy. Trust the process. My process."`,
+// Extra Credit cards — V3 new type. Earned by passing via Let It Ride.
+const EXTRA_CREDIT_CARDS = [
+  {name:"Snitch",      desc:"Play after being blamed. Pick a player and flip their top party card. If it's higher than yours, they discard it. If lower, you swap.",pts:3},
+  {name:"Agile Leadership",desc:"Play during Day of the Deadline. Discard 1 leadership skill and draw a new one from the deck.",pts:3},
+  {name:"Transparency",desc:"Play before the Project Leader accuses. All players reveal their top party card.",pts:3},
+  {name:"Honours Student",desc:"Gain +3 party points if you received no personal fail this round.",pts:3},
+  {name:"Bonus",       desc:"Straight bonus — no ability required.",pts:4},
 ];
+// Refill pool pairs — drawn when hand drops to 2 or fewer cards
+const REFILL_PAIRS = [[0,8],[1,7],[2,6],[3,5],[4,4]];
 
 // ============================================================
 // UTILS
@@ -303,17 +307,28 @@ function removeFromArr(arr,val){const i=arr.indexOf(val);if(i!==-1)arr.splice(i,
 // PLAYER
 // ============================================================
 function makePlayer(name,isHuman,slack=0.80){
-  return{name,isHuman,slack,hand:[],partyPile:[],failMarkers:0,halftimePts:0,celPts:0,eliminated:false,immuneBlame:false};
+  return{name,isHuman,slack,hand:[],partyPile:[],failMarkers:0,halftimePts:0,extraCredit:[],ledCount:0,eliminated:false,immuneBlame:false};
 }
-function buildHand(p,noShow=false,desperation=false){
+function buildHand(p){
   p.hand=[1,2,3,4,5,6,7,'X2'];
-  if(noShow){const i=p.hand.indexOf(1);if(i!==-1)p.hand[i]=0;}
-  if(desperation){const i=p.hand.indexOf(7);if(i!==-1)p.hand[i]=8;}
 }
 function partyTotal(p){return p.partyPile.filter(c=>typeof c==='number').reduce((s,c)=>s+c,0)}
 function topPartyVal(p){const nums=p.partyPile.filter(c=>typeof c==='number');return nums.length?nums[nums.length-1]:0}
-function playerScore(p){return p.halftimePts+partyTotal(p)+p.celPts}
+function extraCreditTotal(p){return p.extraCredit.reduce((s,ec)=>s+ec.pts,0)}
+function playerScore(p){return p.halftimePts+partyTotal(p)+extraCreditTotal(p)}
 function discardTopParty(p){for(let i=p.partyPile.length-1;i>=0;i--){if(typeof p.partyPile[i]==='number'){return p.partyPile.splice(i,1)[0]}}return null}
+function drawExtraCredit(){return {...rand(EXTRA_CREDIT_CARDS)}}
+// Refill pool helpers
+function initRefillPool(){return shuffle([...REFILL_PAIRS])}
+function checkRefill(p){
+  if(p.eliminated) return;
+  if(p.hand.length<=2 && G.refillPool.length>0){
+    const pair=G.refillPool.pop();
+    p.hand.push(...pair);
+    addLog(`${p.name} refills hand: +${pair[0]} and +${pair[1]}`);
+    if(G.refillPool.length===0) G.refillPool=initRefillPool(); // restock
+  }
+}
 
 // ============================================================
 // AI
@@ -371,6 +386,7 @@ function initGame(humanName){
     deck58:shuffle([...EXAM_R5_8]),
     skillDeck:shuffle([...ALL_SKILLS]),
     skillsAvailable:[],
+    refillPool:initRefillPool(),
     nextExamBonus:0,
     exam:null,
     effortPile:[],
@@ -392,18 +408,19 @@ function initGame(humanName){
     _revealTimer:null,
     blameAccused:null,
     blameVoters:[],
-    blameVoterIdx:0,
-    blameYes:0,blameNo:0,
+    blameVotes:{},      // keyed by player name: true/false
     blameResult:null,
-    redirectVoteYes:0,
     finalPile:[],
     finalTotal:0,
     passResult:null,
-    celebCandidates:[],
+    ecNomineeCandidates:[],
     log:[],
+    totalLeaders:0,     // how many distinct players have led at least once
+    leaderPicksNext:false,
   };
   G.players.forEach(p=>buildHand(p));
-  if(G.skillDeck.length) G.skillsAvailable.push(G.skillDeck.pop());
+  // V3: start with 2 skills face-up
+  while(G.skillsAvailable.length<2 && G.skillDeck.length) G.skillsAvailable.push(G.skillDeck.pop());
   G.leaderIdx=randInt(0,3);
   startRound();
 }
@@ -446,6 +463,8 @@ function renderPhase(){
   switch(G.phase){
     case 'title': return renderTitle();
     case 'round_start': return renderRoundStart();
+    case 'nominate_ec': return renderNominateEC();
+    case 'pick_next_leader': return renderPickNextLeader();
     case 'play_effort': return renderPlayEffort();
     case 'play_party': return renderPlayParty();
     case 'reveal': return renderReveal();
@@ -458,10 +477,8 @@ function renderPhase(){
     case 'skill_extend_pickup': return renderExtendPickup();
     case 'skill_extend_replay': return renderExtendReplay();
     case 'result': return renderResult();
-    case 'celebrate': return renderCelebrate();
     case 'blame_accuse': return renderBlameAccuse();
     case 'blame_vote': return renderBlameVote();
-    case 'blame_redirect': return renderBlameRedirect();
     case 'round_end': return renderRoundEnd();
     case 'halftime': return renderHalftime();
     case 'end': return renderEnd();
@@ -471,7 +488,6 @@ function renderPhase(){
 
 // --- STATUS BAR ---
 function renderStatusBar(){
-  const active=getActive();
   const leader=getLeader();
   const scores=G.players.map(p=>playerScore(p));
   const maxScore=Math.max(...scores);
@@ -480,27 +496,32 @@ function renderStatusBar(){
     const isLeader=i===G.leaderIdx;
     const expelled=p.eliminated;
     const score=playerScore(p);
-    const failDots='<span class="fail-dot-filled">'+'\u25cf'.repeat(p.failMarkers)+'</span>'+'<span style="color:#2d3748">'+'\u25cf'.repeat(4-p.failMarkers)+'</span>';
-    const handHtml=!expelled?sortedHand(p.hand).map(c=>scHtml(c)).join(''):'<span class="text-muted">expelled</span>';
+    const failDots='\u25cf'.repeat(p.failMarkers)+'<span style="color:#2d3748">'+'\u25cf'.repeat(Math.max(0,4-p.failMarkers))+'</span>';
+    // Hand: shown for human, hidden count for AI; party pile always hidden count
+    const handHtml=expelled?'<span class="text-muted">expelled</span>':
+      p.isHuman?sortedHand(p.hand).map(c=>scHtml(c)).join(''):
+      `<span class="text-muted">${p.hand.length} cards</span>`;
+    // Party pile: show your own total, others show ? (face-down rule)
+    const partyHtml=p.isHuman?`<span class="text-green">${partyTotal(p)}pts</span>`:`<span class="text-muted">?pts</span>`;
     rows+=`<div class="pr${isLeader?' is-leader':''}${expelled?' eliminated':''}">
       <span class="pr-name${p.isHuman?' human':''}">${esc(p.name)}${isLeader?' *':''}</span>
-      <span class="pr-score${score===maxScore&&!expelled?' best':''}" title="Total">${score}</span>
-      <span class="text-muted" title="Party">${partyTotal(p)}</span>
-      <span class="text-muted" title="Cel">${p.celPts}</span>
+      <span class="pr-score${score===maxScore&&!expelled?' best':''}">${p.isHuman?score:'?'}</span>
+      ${partyHtml}
       <span class="pr-fails">${failDots}</span>
       <span class="pr-hand">${handHtml}</span>
     </div>`;
   });
   const skillsBadge=G.skillsAvailable.length?`<span class="badge badge-purple">${G.skillsAvailable.length} skill${G.skillsAvailable.length>1?'s':''}</span>`:'';
+  const ecBadge=humanPlayer().extraCredit.length?`<span class="badge badge-gold">${humanPlayer().extraCredit.length} EC</span>`:'';
   return `<div class="status-bar">
     <div class="status-top">
       <span class="badge badge-purple">Round ${G.roundNum}/8</span>
       <span class="badge badge-gold">Leader: ${esc(leader.name)}</span>
-      ${G.exam?`<span class="badge badge-green">Effort: ${G.finalReq}</span>`:''}
-      ${skillsBadge}
+      ${G.exam?`<span class="badge badge-green">Need: ${G.finalReq}</span>`:''}
+      ${skillsBadge}${ecBadge}
     </div>
     <div class="player-rows">${rows}</div>
-    <div class="status-hint">* = Project Leader &nbsp;|&nbsp; dots = fail markers (4 = expelled) &nbsp;|&nbsp; Party / Cel shown</div>
+    <div class="status-hint">* = Project Leader &nbsp;|&nbsp; dots = fail markers &nbsp;|&nbsp; Party pile is face-down — only you can see yours</div>
   </div>`;
 }
 
@@ -509,13 +530,18 @@ function renderLog(){
   return G.log.map(l=>`<div class="notif ${l.type}">${esc(l.text)}</div>`).join('');
 }
 
-function renderPartyPiles(){
+function renderPartyPiles(revealAll=false){
   const active=getActive();
   const rows=active.map(p=>{
-    const cards=p.partyPile.length?sortedHand(p.partyPile).map(c=>scHtml(c)).join(''):'<span class="text-muted">empty</span>';
-    return `<div class="pp-row"><span class="pp-name">${esc(p.name)}</span><span class="pp-pts">${partyTotal(p)} pts</span><span class="pr-hand">${cards}</span></div>`;
+    if(revealAll||p.isHuman){
+      const cards=p.partyPile.length?sortedHand(p.partyPile).map(c=>scHtml(c)).join(''):'<span class="text-muted">empty</span>';
+      return `<div class="pp-row"><span class="pp-name">${esc(p.name)}</span><span class="pp-pts text-green">${partyTotal(p)} pts</span><span class="pr-hand">${cards}</span></div>`;
+    } else {
+      const hidden=p.partyPile.length?p.partyPile.map(()=>`<span class="sc sc-hidden">?</span>`).join(''):'<span class="text-muted">empty</span>';
+      return `<div class="pp-row"><span class="pp-name">${esc(p.name)}</span><span class="pp-pts text-muted">? pts</span><span class="pr-hand">${hidden}</span></div>`;
+    }
   }).join('');
-  return `<div class="panel"><div class="panel-title">Party Piles</div><div class="party-piles">${rows}</div></div>`;
+  return `<div class="panel"><div class="panel-title">Party Piles${revealAll?' — Revealed':' — Face Down'}</div><div class="party-piles">${rows}</div></div>`;
 }
 
 // --- TITLE ---
@@ -533,20 +559,22 @@ function renderTitle(){
 function renderRoundStart(){
   const exam=G.exam;
   const leader=getLeader();
+  const skillsHtml=G.skillsAvailable.length
+    ?G.skillsAvailable.map(s=>`<span class="text-purple">${esc(s)}</span>`).join(', ')
+    :'<span class="text-muted">None yet — earn skills by passing via Let It Ride</span>';
   return `<div class="panel">
     <div class="panel-title">Round ${G.roundNum} &mdash; ${esc(exam.name)}</div>
     <div class="exam-layout">
-      <img class="exam-img" src="SLACK%20EXAMS123/Slide${exam.slide}.JPG" alt="${esc(exam.name)}" onerror="this.style.background='#252547';this.removeAttribute('src')">
+      <img class="exam-img" src="../SLACK%20VERSION%202/EXAM%20CARDS%20FINAL%20REAL/Slide${exam.slide}.JPG" alt="${esc(exam.name)}" onerror="this.style.background='#252547';this.removeAttribute('src')">
       <div class="exam-info">
         <div class="exam-name">${esc(exam.name)}</div>
         <div class="exam-desc">&ldquo;${esc(exam.desc)}&rdquo;</div>
-        <div class="exam-row"><span class="exam-lbl">Effort Required</span><span class="exam-val text-red">${exam.effort}</span></div>
-        <div class="exam-row"><span class="exam-lbl">Celebration Points</span><span class="exam-val text-yellow">+${exam.cel}</span></div>
+        <div class="exam-row"><span class="exam-lbl">Effort Required</span><span class="exam-val text-red">${G.finalReq}</span></div>
+        <div class="exam-row"><span class="exam-lbl">Reward (Pass)</span><span class="exam-val text-yellow">Extra Credit card</span></div>
         <div class="exam-row"><span class="exam-lbl">Project Leader</span><span class="exam-val text-purple">${esc(leader.name)}</span></div>
-        <div class="skill-pill"><div class="skill-pill-name">${esc(exam.skill)}</div><div class="skill-pill-desc">${esc(exam.skillDesc)}</div></div>
       </div>
     </div>
-    ${G.skillsAvailable.length?`<div class="text-muted">Available skills: ${G.skillsAvailable.map(s=>`<span class="text-purple">${esc(s)}</span>`).join(', ')}</div>`:'<div class="text-muted">No leadership skills available yet. Earn them by passing rounds without using a skill.</div>'}
+    <div class="text-muted" style="margin-top:6px">Available skills: ${skillsHtml}</div>
   </div>
   <div class="btn-group"><button class="btn btn-primary" onclick="action('play_cards')">Play Cards &rarr;</button></div>`+renderStatusBar();
 }
@@ -865,34 +893,31 @@ function renderResult(){
   const pile=G.finalPile;
   const pileHtml=pile.map(c=>rcHtml(c)).join('');
   const logHtml=renderLog();
-  return renderStatusBar()+
-  `<div class="result-banner ${pass?'result-pass':'result-fail'}">
+  return `<div class="result-banner ${pass?'result-pass':'result-fail'}">
     <div class="result-title">${pass?'PASS':'FAIL'}</div>
-    <div class="result-sub">${total} / ${req} effort${pass?` — passed by ${total-req}`:`— short by ${req-total}`}</div>
+    <div class="result-sub">${total} / ${req} effort${pass?` — passed by ${total-req}`:` — short by ${req-total}`}</div>
   </div>
   <div class="panel">
     <div class="panel-title">Final Effort Pile</div>
     <div class="reveal-pile">${pileHtml}</div>
   </div>
   ${logHtml}
-  <div class="btn-group"><button class="btn btn-primary" onclick="action('after_result')">Continue &rarr;</button></div>`;
+  <div class="btn-group"><button class="btn btn-primary" onclick="action('after_result')">Continue &rarr;</button></div>`+renderStatusBar();
 }
 
-// --- CELEBRATE ---
-function renderCelebrate(){
+// --- NOMINATE EXTRA CREDIT ---
+function renderNominateEC(){
   const leader=getLeader();
-  const candidates=G.celebCandidates;
-  const pcards=candidates.map((p,i)=>`<div class="pcard" onclick="action('give_cel',${i})">
+  const candidates=G.ecNomineeCandidates;
+  const pcards=candidates.map((p,i)=>`<div class="pcard" onclick="action('nominate_ec',${i})">
     <div class="pcard-name">${esc(p.name)}</div>
-    <div class="pcard-info">Current: ${playerScore(p)} pts</div>
+    <div class="pcard-info">EC cards: ${p.extraCredit.length}</div>
   </div>`).join('');
-  return renderStatusBar()+
-  `<div class="panel">
-    <div class="panel-title">Celebration Points &mdash; ${esc(leader.name)} Awards</div>
-    <div class="notif ok">${esc(leader.name)} earned ${G.exam.cel} Celebration Points! Award 2 bonus points to a teammate.</div>
+  return `<div class="panel">
+    <div class="panel-title">Extra Credit &mdash; Nominate a Teammate</div>
+    <div class="notif ok">${esc(leader.name)} passed via Let It Ride! Both you and one teammate each earn a random Extra Credit card.</div>
     <div class="player-grid">${pcards}</div>
-    <div class="btn-group"><button class="btn btn-muted btn-sm" onclick="action('give_cel',-1)">Skip</button></div>
-  </div>`;
+  </div>`+renderStatusBar();
 }
 
 // --- BLAME ACCUSE ---
@@ -901,90 +926,89 @@ function renderBlameAccuse(){
   const active=getActive();
   const blameable=active.filter(p=>p!==leader&&!p.immuneBlame&&!p.eliminated);
   if(!blameable.length){
-    return renderStatusBar()+`<div class="blame-box"><div class="blame-title">Blame</div><div class="notif">No one can be blamed.</div></div><div class="btn-group"><button class="btn btn-primary" onclick="action('skip_blame')">Continue &rarr;</button></div>`;
+    return `<div class="blame-box"><div class="blame-title">Blame</div><div class="notif">No one can be blamed.</div></div><div class="btn-group"><button class="btn btn-primary" onclick="action('skip_blame')">Continue &rarr;</button></div>`+renderStatusBar();
   }
   const pcards=blameable.map((p,i)=>`<div class="pcard" onclick="action('accuse',${i})">
     <div class="pcard-name">${esc(p.name)}</div>
-    <div class="pcard-info">Party: ${partyTotal(p)} pts &nbsp;|&nbsp; Fails: ${p.failMarkers}</div>
+    <div class="pcard-info">Fails: ${p.failMarkers}/4</div>
   </div>`).join('');
   G._blameable=blameable;
-  return renderStatusBar()+
-  `<div class="blame-box">
-    <div class="blame-title">BLAME TIME</div>
-    <div class="notif bad">Major Fail! ${esc(leader.name)} must accuse someone.</div>
+  return `<div class="blame-box">
+    <div class="blame-title">BLAME</div>
+    <div class="notif bad">Project failed! ${esc(leader.name)} must accuse someone.</div>
     <div class="player-grid">${pcards}</div>
-  </div>`;
+  </div>`+renderStatusBar();
 }
 
-// --- BLAME VOTE ---
+// --- BLAME VOTE (V3: human votes, then all revealed simultaneously) ---
 function renderBlameVote(){
   const accused=G.blameAccused;
-  const voters=G.blameVoters;
-  const voterIdx=G.blameVoterIdx;
-  if(voterIdx>=voters.length){
-    // tally
-    return renderStatusBar()+`<div class="blame-box"><div class="blame-title">Vote Result</div>${renderLog()}</div><div class="btn-group"><button class="btn btn-primary" onclick="action('after_blame_vote')">Continue &rarr;</button></div>`;
+  // Check if human still needs to vote
+  const humanIsVoter=G.blameVoters.find(p=>p.isHuman);
+  const humanVoted=humanIsVoter?G.blameVotes[humanIsVoter.name]!==undefined:true;
+  if(!humanVoted){
+    return `<div class="blame-box">
+      <div class="blame-title">Your Vote</div>
+      <div class="notif bad">Is <strong>${esc(accused.name)}</strong> responsible for the fail?</div>
+      <div class="btn-group">
+        <button class="btn btn-danger" onclick="action('human_vote',true)">GUILTY</button>
+        <button class="btn btn-muted" onclick="action('human_vote',false)">NOT GUILTY</button>
+      </div>
+    </div>`+renderStatusBar();
   }
-  const voter=voters[voterIdx];
-  if(!voter.isHuman){
-    return renderStatusBar()+`<div class="blame-box"><div class="blame-title">Voting...</div><div class="notif">${esc(voter.name)} is voting...</div><div class="btn-group"><button class="btn btn-primary" onclick="action('ai_vote')">See Vote &rarr;</button></div></div>`;
-  }
-  return renderStatusBar()+
-  `<div class="blame-box">
-    <div class="blame-title">Your Vote</div>
-    <div class="notif bad">Is <strong>${esc(accused.name)}</strong> responsible for the fail?</div>
-    <div class="btn-group">
-      <button class="btn btn-danger" onclick="action('human_vote',true)">GUILTY</button>
-      <button class="btn btn-muted" onclick="action('human_vote',false)">NOT GUILTY</button>
-    </div>
-  </div>`;
-}
-
-// --- BLAME REDIRECT ---
-function renderBlameRedirect(){
-  const accused=G.blameAccused;
-  const leader=getLeader();
-  if(!accused.isHuman){
-    return renderStatusBar()+`<div class="blame-box"><div class="blame-title">Redirect?</div><div class="notif">${esc(accused.name)} considering redirect...</div><div class="btn-group"><button class="btn btn-primary" onclick="action('ai_redirect')">See Decision &rarr;</button></div></div>`;
-  }
-  return renderStatusBar()+
-  `<div class="blame-box">
-    <div class="blame-title">Not Guilty — Redirect?</div>
-    <div class="notif ok">You were found NOT GUILTY. You can redirect blame to ${esc(leader.name)}!</div>
-    <div class="btn-group">
-      <button class="btn btn-warning" onclick="action('human_redirect',true)">Redirect to ${esc(leader.name)}</button>
-      <button class="btn btn-muted" onclick="action('human_redirect',false)">Drop It</button>
-    </div>
-  </div>`;
+  // All votes collected — reveal
+  const yesVotes=Object.values(G.blameVotes).filter(v=>v).length;
+  const noVotes=Object.values(G.blameVotes).filter(v=>!v).length;
+  const voteRows=G.blameVoters.map(p=>{
+    const v=G.blameVotes[p.name];
+    return `<div class="notif ${v?'bad':''}" style="margin-bottom:4px">${esc(p.name)}: <strong>${v?'GUILTY':'Not Guilty'}</strong></div>`;
+  }).join('');
+  return `<div class="blame-box">
+    <div class="blame-title">Votes Revealed</div>
+    ${voteRows}
+    <div class="notif warn" style="margin-top:8px">Guilty: ${yesVotes} &nbsp;|&nbsp; Not Guilty: ${noVotes}</div>
+  </div>
+  <div class="btn-group"><button class="btn btn-primary" onclick="action('after_blame_vote')">Continue &rarr;</button></div>`+renderStatusBar();
 }
 
 // --- ROUND END ---
 function renderRoundEnd(){
-  return renderStatusBar()+renderPartyPiles()+renderLog()+
-  `<div class="btn-group"><button class="btn btn-primary" onclick="action('next_round')">Next Round &rarr;</button></div>`;
+  return renderPartyPiles()+renderLog()+
+  `<div class="btn-group"><button class="btn btn-primary" onclick="action('next_round')">Next Round &rarr;</button></div>`+renderStatusBar();
 }
 
-// --- HALFTIME ---
+// --- PICK NEXT LEADER ---
+function renderPickNextLeader(){
+  const active=getActive().filter(p=>p!==getLeader());
+  const pcards=active.map((p,i)=>`<div class="pcard" onclick="action('pick_leader',${i})">
+    <div class="pcard-name">${esc(p.name)}</div>
+    <div class="pcard-info">Led ${p.ledCount}x &nbsp;|&nbsp; Fails: ${p.failMarkers}</div>
+  </div>`).join('');
+  G._leaderCandidates=active;
+  return `<div class="panel">
+    <div class="panel-title">Choose Next Project Leader</div>
+    <div class="notif warn">${esc(getLeader().name)}, pick who leads the next project. You cannot choose yourself.</div>
+    <div class="player-grid">${pcards}</div>
+  </div>`+renderStatusBar();
+}
+
+// --- SEMESTER BREAK (formerly Halftime) ---
 function renderHalftime(){
   const active=getActive();
-  const ranked=[...active].sort((a,b)=>(partyTotal(b)+b.celPts)-(partyTotal(a)+a.celPts));
-  const n=ranked.length;
+  const ranked=[...active].sort((a,b)=>playerScore(b)-playerScore(a));
   const rows=ranked.map((p,i)=>{
-    const ht=partyTotal(p)+p.celPts;
-    const noShow=i<2;
-    const desp=i>=n-2;
-    const mods=[noShow?'No Show (1→0)':'',desp?'Desperation (7→8)':''].filter(Boolean).join(', ');
-    return `<tr><td>${i+1}. ${esc(p.name)}</td><td>${partyTotal(p)}</td><td>${p.celPts}</td><td><strong>${ht}</strong></td><td>${mods?`<span class="text-yellow">${mods}</span>`:''}</td></tr>`;
+    const ec=p.extraCredit.map(c=>`<span class="text-yellow">${esc(c.name)}(+${c.pts})</span>`).join(', ')||'—';
+    return `<tr><td>${i+1}. ${esc(p.name)}</td><td>${partyTotal(p)}</td><td>${extraCreditTotal(p)}</td><td><strong>${playerScore(p)}</strong></td><td style="font-size:0.75rem">${ec}</td></tr>`;
   }).join('');
-  return `<div class="halftime-title">HALFTIME</div>
-  <div class="halftime-sub">Rounds 1&ndash;4 complete! Scores locked in. New hands dealt.</div>
+  return `<div class="halftime-title">SEMESTER BREAK</div>
+  <div class="halftime-sub">Rounds 1&ndash;4 complete! Party piles revealed and locked in. New hands dealt.</div>
+  ${renderPartyPiles(true)}
   <div class="panel">
     <table class="scores-table">
-      <thead><tr><th>Player</th><th>Party</th><th>Cel</th><th>Total</th><th>Hand Modifier</th></tr></thead>
+      <thead><tr><th>Player</th><th>Party</th><th>EC</th><th>Total</th><th>Extra Credit Cards</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
-  <div class="panel"><div class="notif warn">Top 2 players get No Show (1 replaced by 0). Bottom 2 get Desperation (7 replaced by 8). Party Piles reset.</div></div>
   <div class="btn-group center"><button class="btn btn-primary" onclick="action('start_second_half')">Start Second Half &rarr;</button></div>`;
 }
 
@@ -995,10 +1019,10 @@ function renderEnd(){
     const s=playerScore(p);
     const isWinner=i===0&&!p.eliminated;
     return `<tr class="${isWinner?'winner-row':''}${p.eliminated?' expelled-row':''}">
-      <td>${i+1}. ${esc(p.name)}${isWinner?' 🏆':''}</td>
+      <td>${i+1}. ${esc(p.name)}${isWinner?' W':''}</td>
       <td>${p.halftimePts}</td>
       <td>${partyTotal(p)}</td>
-      <td>${p.celPts}</td>
+      <td>${extraCreditTotal(p)}</td>
       <td><strong>${s}</strong></td>
       <td>${p.eliminated?'Expelled':''}</td>
     </tr>`;
@@ -1008,7 +1032,7 @@ function renderEnd(){
   <div class="halftime-sub">Winner: <strong>${esc(winner.name)}</strong> with ${playerScore(winner)} points!</div>
   <div class="panel">
     <table class="scores-table">
-      <thead><tr><th>Player</th><th>Halftime</th><th>Party</th><th>Cel</th><th>Total</th><th></th></tr></thead>
+      <thead><tr><th>Player</th><th>Halftime</th><th>Party</th><th>EC</th><th>Total</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
@@ -1044,14 +1068,12 @@ function action(name, data){
     case 'skill_ext_replay_pick': G.humanEffort=data; render(); break;
     case 'skill_ext_replay_confirm': doExtReplayConfirm(); break;
     case 'after_result': doAfterResult(); break;
-    case 'give_cel': doGiveCel(data); break;
+    case 'nominate_ec': doNominateEC(data); break;
     case 'accuse': doAccuse(data); break;
     case 'skip_blame': doSkipBlame(); break;
-    case 'ai_vote': doAiVote(); break;
     case 'human_vote': doHumanVote(data); break;
     case 'after_blame_vote': doAfterBlameVote(); break;
-    case 'ai_redirect': doAiRedirect(); break;
-    case 'human_redirect': doHumanRedirect(data); break;
+    case 'pick_leader': doPickLeader(data); break;
     case 'next_round': doNextRound(); break;
     case 'start_second_half': doStartSecondHalf(); break;
     case 'restart': G.phase='title'; render(); break;
@@ -1137,6 +1159,8 @@ function doConfirmParty(none=false){
   G.effortPile=effortPile;
   G.revealIdx=0;
   G.lastCard=effortPile[effortPile.length-1];
+  // V3: check if any player needs a refill after playing cards
+  checkAllRefills();
   G.phase='reveal';
   render();
 }
@@ -1450,7 +1474,7 @@ function finishExtend(){
   doAfterSkill();
 }
 
-// AFTER RESULT
+// AFTER RESULT — V3
 function doAfterResult(){
   clearLog();
   const pass=G.passResult;
@@ -1458,73 +1482,51 @@ function doAfterResult(){
   const active=getActive();
   if(pass){
     if(!G.usedSkill){
-      leader.celPts+=G.exam.cel;
-      addLog(`${leader.name} earns ${G.exam.cel} Celebration Points!`,'ok');
+      // V3: award a skill card to available pool
       if(G.skillDeck.length){
         const s=G.skillDeck.pop();
         G.skillsAvailable.push(s);
-        addLog(`New skill earned: ${s}`,'ok');
+        addLog(`New skill unlocked: ${s}`,'ok');
       }
-      // Celebrate award
+      // V3: leader earns Extra Credit; nominates teammate to also earn one
+      leader.extraCredit.push(drawExtraCredit());
+      addLog(`${leader.name} earns an Extra Credit card!`,'ok');
       const candidates=active.filter(p=>p!==leader);
       if(candidates.length>0){
-        G.celebCandidates=candidates;
+        G.ecNomineeCandidates=candidates;
         if(leader.isHuman){
-          G.phase='celebrate';
+          G.phase='nominate_ec';
           render();
           return;
         } else {
           const rec=rand(candidates);
-          rec.celPts+=2;
-          addLog(`${leader.name} awards 2 bonus Celebration Points to ${rec.name}!`,'ok');
+          rec.extraCredit.push(drawExtraCredit());
+          addLog(`${leader.name} nominates ${rec.name} — Extra Credit earned!`,'ok');
         }
       }
     } else {
-      addLog('No celebration points — a skill was used.','warn');
+      addLog('Skill was used — no Extra Credit this round.','warn');
     }
     clearBlameState();
     G.phase='round_end';
     render();
   } else {
-    // FAIL
-    const shortfall=G.finalReq-G.finalTotal;
-    const isMajor=G.usedSkill||(shortfall>=active.length);
+    // FAIL — V3: everyone gets a fail marker; everyone discards top party card; blame triggered
     active.forEach(p=>p.failMarkers++);
-    addLog('Everyone gets 1 fail marker.','bad');
-    if(isMajor){
-      addLog('MAJOR FAIL — everyone discards their top Party Pile card!','bad');
-      active.forEach(p=>{
-        const d=discardTopParty(p);
-        if(d!==null) addLog(`${p.name} discards ${cardLabel(d)}.`,'bad');
-      });
-      // Check expulsions
-      active.forEach(p=>{
-        if(p.failMarkers>=4&&!p.eliminated){
-          p.eliminated=true;
-          addLog(`${p.name} has been EXPELLED! (4 fail markers)`,'bad');
-        }
-      });
-      // blame
-      const blameable=getActive().filter(p=>p!==leader&&!p.immuneBlame);
-      if(blameable.length>0){
-        G._blameable=blameable;
-        G.phase='blame_accuse';
-        render();
-        return;
-      }
-    } else {
-      addLog('MINOR FAIL — player(s) with highest top Party card discard it.','warn');
-      const topVals=active.map(p=>topPartyVal(p));
-      const maxV=Math.max(...topVals);
-      if(maxV>0){
-        active.filter(p=>topPartyVal(p)===maxV).forEach(p=>{
-          const d=discardTopParty(p);
-          if(d!==null) addLog(`${p.name} discards ${cardLabel(d)}.`,'warn');
-        });
-      }
-      active.forEach(p=>{
-        if(p.failMarkers>=4&&!p.eliminated){p.eliminated=true;addLog(`${p.name} has been EXPELLED!`,'bad');}
-      });
+    addLog('Project failed! Everyone gets 1 fail marker.','bad');
+    active.forEach(p=>{
+      const d=discardTopParty(p);
+      if(d!==null) addLog(`${p.name} discards ${cardLabel(d)}.`,'bad');
+    });
+    active.forEach(p=>{
+      if(p.failMarkers>=4&&!p.eliminated){p.eliminated=true;addLog(`${p.name} EXPELLED! (4 fail markers)`,'bad');}
+    });
+    const blameable=getActive().filter(p=>p!==leader&&!p.immuneBlame);
+    if(blameable.length>0){
+      G._blameable=blameable;
+      G.phase='blame_accuse';
+      render();
+      return;
     }
     clearBlameState();
     G.phase='round_end';
@@ -1532,16 +1534,13 @@ function doAfterResult(){
   }
 }
 
-function doGiveCel(idx){
-  if(idx>=0&&idx<G.celebCandidates.length){
-    G.celebCandidates[idx].celPts+=2;
-    addLog(`${G.celebCandidates[idx].name} gets 2 bonus Celebration Points!`,'ok');
+function doNominateEC(idx){
+  const nominees=G.ecNomineeCandidates;
+  if(idx>=0&&idx<nominees.length){
+    nominees[idx].extraCredit.push(drawExtraCredit());
+    addLog(`${nominees[idx].name} earns an Extra Credit card!`,'ok');
   }
-  if(G.skillDeck.length){
-    const s=G.skillDeck.pop();
-    G.skillsAvailable.push(s);
-    addLog(`New skill earned: ${s}`,'ok');
-  }
+  if(G.skillDeck.length){/* already awarded above */}
   clearBlameState();
   G.phase='round_end';
   render();
@@ -1554,9 +1553,13 @@ function doAccuse(idx){
   G.blameAccused=accused;
   const leader=getLeader();
   const active=getActive();
+  // V3: voters = everyone except leader and accused
   G.blameVoters=active.filter(p=>p!==leader&&p!==accused&&!p.eliminated);
-  G.blameVoterIdx=0;
-  G.blameYes=0;G.blameNo=0;
+  G.blameVotes={};
+  // AI voters vote immediately (secretly); human votes via UI
+  G.blameVoters.forEach(p=>{
+    if(!p.isHuman) G.blameVotes[p.name]=Math.random()<0.55;
+  });
   addLog(`${leader.name} accuses ${accused.name}!`,'bad');
   G.phase='blame_vote';
   render();
@@ -1568,85 +1571,24 @@ function doSkipBlame(){
   render();
 }
 
-function doAiVote(){
-  const voter=G.blameVoters[G.blameVoterIdx];
-  const guilty=Math.random()<0.55;
-  if(guilty){G.blameYes++;addLog(`${voter.name}: GUILTY`,'bad');}
-  else{G.blameNo++;addLog(`${voter.name}: not guilty`);}
-  G.blameVoterIdx++;
-  render();
-}
-
 function doHumanVote(guilty){
-  if(guilty){G.blameYes++;addLog('You vote: GUILTY','bad');}
-  else{G.blameNo++;addLog('You vote: not guilty');}
-  G.blameVoterIdx++;
-  render();
+  const human=humanPlayer();
+  G.blameVotes[human.name]=guilty;
+  render(); // will show results since human is now voted
 }
 
 function doAfterBlameVote(){
   const accused=G.blameAccused;
-  const leader=getLeader();
-  const needed=Math.max(1,G.blameVoters.length*0.5);
-  const guilty=G.blameVoters.length===0||G.blameYes>=needed;
+  const yesVotes=Object.values(G.blameVotes).filter(v=>v).length;
+  const noVotes=Object.values(G.blameVotes).filter(v=>!v).length;
+  const guilty=yesVotes>noVotes;
+  clearLog();
   if(guilty){
     accused.failMarkers++;
     if(accused.failMarkers>=4&&!accused.eliminated){accused.eliminated=true;addLog(`${accused.name} EXPELLED!`,'bad');}
-    addLog(`${G.blameYes}-${G.blameNo} GUILTY — ${accused.name} gets a personal fail marker!`,'bad');
-    G.blameResult='guilty';
-    clearBlameState();
-    G.phase='round_end';
-    render();
+    addLog(`${yesVotes}-${noVotes} GUILTY — ${accused.name} gets an extra fail marker!`,'bad');
   } else {
-    addLog(`${G.blameYes}-${G.blameNo} NOT GUILTY — ${accused.name} may redirect blame to ${leader.name}!`,'warn');
-    G.blameResult='innocent';
-    G.phase='blame_redirect';
-    render();
-  }
-}
-
-function doAiRedirect(){
-  const accused=G.blameAccused;
-  const leader=getLeader();
-  const redirect=Math.random()<0.6;
-  if(redirect){
-    addLog(`${accused.name} redirects blame to ${leader.name}!`,'warn');
-    const active=getActive();
-    const voters=active.filter(p=>p!==leader&&!p.eliminated);
-    let yes2=0;
-    voters.forEach(v=>{ if(Math.random()<0.5) yes2++; });
-    if(yes2>=Math.max(1,voters.length*0.5)){
-      leader.failMarkers++;
-      if(leader.failMarkers>=4&&!leader.eliminated){leader.eliminated=true;addLog(`${leader.name} EXPELLED!`,'bad');}
-      addLog(`${leader.name} found GUILTY! Personal fail marker!`,'bad');
-    } else {
-      addLog(`${leader.name} also NOT GUILTY. Blame dropped.`);
-    }
-  } else {
-    addLog(`${accused.name} drops it.`);
-  }
-  clearBlameState();
-  G.phase='round_end';
-  render();
-}
-
-function doHumanRedirect(redirect){
-  const leader=getLeader();
-  if(redirect){
-    addLog(`You redirect blame to ${leader.name}!`,'warn');
-    const active=getActive();
-    const voters=active.filter(p=>p!==leader&&!p.eliminated);
-    let yes2=0;
-    voters.forEach(v=>{ if(Math.random()<0.5) yes2++; });
-    if(yes2>=Math.max(1,voters.length*0.5)){
-      leader.failMarkers++;
-      if(leader.failMarkers>=4&&!leader.eliminated){leader.eliminated=true;addLog(`${leader.name} EXPELLED!`,'bad');}
-      addLog(`${leader.name} found GUILTY! Fail marker added!`,'bad');
-    } else {
-      addLog(`${leader.name} also NOT GUILTY. Blame dropped.`);
-    }
-  } else {
-    addLog('You drop the blame. Moving on.');
+    addLog(`${yesVotes}-${noVotes} NOT GUILTY — no extra penalty.`,'ok');
   }
   clearBlameState();
   G.phase='round_end';
@@ -1657,40 +1599,77 @@ function clearBlameState(){
   G.players.forEach(p=>p.immuneBlame=false);
   G.blameAccused=null;
   G._blameable=null;
+  G.blameVotes={};
+}
+
+// V3: after each card played check if refill needed
+function checkAllRefills(){
+  getActive().forEach(p=>checkRefill(p));
 }
 
 function doNextRound(){
   clearLog();
   const active=getActive();
   if(active.length<=1){G.phase='end';render();return;}
-  if(G.roundNum===4){
-    doHalftime();
-    return;
-  }
-  G.leaderIdx=(G.leaderIdx+1)%4;
+  if(G.roundNum===4){doHalftime();return;}
   G.roundNum++;
   if(G.roundNum>8){G.phase='end';render();return;}
+  // V3: leader rotation — after everyone has led once, current leader picks next
+  advanceLeader();
+  startRound();
+}
+
+function advanceLeader(){
+  const leader=getLeader();
+  leader.ledCount=(leader.ledCount||0)+1;
+  const allLed=G.players.every(p=>p.eliminated||p.ledCount>0);
+  if(allLed){
+    G.leaderPicksNext=true;
+    if(!getLeader().isHuman){
+      // AI picks a random active non-self player
+      const opts=getActive().filter(p=>p!==getLeader());
+      if(opts.length){
+        const next=rand(opts);
+        G.leaderIdx=G.players.indexOf(next);
+      }
+    } else {
+      G.phase='pick_next_leader';
+      render();
+    }
+  } else {
+    // Still in first rotation — advance clockwise
+    let tries=0;
+    do{ G.leaderIdx=(G.leaderIdx+1)%4; tries++; }
+    while(G.players[G.leaderIdx].eliminated&&tries<4);
+  }
+}
+
+function doPickLeader(idx){
+  const candidates=G._leaderCandidates;
+  const next=candidates[idx];
+  if(!next) return;
+  G.leaderIdx=G.players.indexOf(next);
   startRound();
 }
 
 function doHalftime(){
   const active=getActive();
-  const ranked=[...active].sort((a,b)=>(partyTotal(b)+b.celPts)-(partyTotal(a)+a.celPts));
-  ranked.forEach(p=>{ p.halftimePts=partyTotal(p)+p.celPts; });
-  const n=ranked.length;
-  ranked.forEach((p,i)=>{
-    const noShow=i<2;
-    const desp=i>=n-2;
+  // V3: lock in scores, reset party piles, deal fresh hands
+  active.forEach(p=>{
+    p.halftimePts=playerScore(p); // includes party + EC so far
     p.partyPile=[];
-    buildHand(p,noShow,desp);
+    buildHand(p);
   });
   G.phase='halftime';
   render();
 }
 
 function doStartSecondHalf(){
-  G.leaderIdx=(G.leaderIdx+1)%4;
   G.roundNum=5;
+  // simple clockwise for second half start — leader already set
+  let tries=0;
+  do{ G.leaderIdx=(G.leaderIdx+1)%4; tries++; }
+  while(G.players[G.leaderIdx].eliminated&&tries<4);
   startRound();
 }
 
