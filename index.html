@@ -222,27 +222,33 @@ body{background:#0d0d1a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;mi
 // ============================================================
 // DATA
 // ============================================================
-// Group Project Cards (formerly "Exam Cards") — V3
+// Group Project Cards — V3 (effort values for 4 players)
 const EXAM_R1_4 = [
-  {name:"PHIL 101",desc:"Write a 1,000-word essay about the philosopher Haddaway's famous question: 'What is Love?'",effort:11,blame:"highest",slide:1},
-  {name:"SOC 102",desc:"Write a report on how exactly one person ends up doing all the group work.",effort:11,blame:"highest",slide:2},
-  {name:"STAT 201",desc:"Prove statistically that 73% of all statistics are made up on the spot--including this one.",effort:12,blame:"accuse",slide:3},
-  {name:"BIO 215",desc:"Memorize every organ in the human body, then forget them immediately after the exam.",effort:12,blame:"accuse",slide:4},
-  {name:"MKTG 250",desc:"Create a campaign convincing people they need something they've lived without for 20 years.",effort:13,blame:"highest",slide:5},
-  {name:"CSCI 220",desc:"Write code that works perfectly... until the professor runs it.",effort:13,blame:"accuse",slide:6},
-  {name:"HIST 305",desc:"Explain a historical event through badly labeled maps and vague dates like 'the late 1800s.'",effort:14,blame:"highest",slide:7},
-  {name:"PSYC 290",desc:"Design an experiment proving that procrastination is a legitimate time management strategy.",effort:14,blame:"accuse",slide:8},
+  {name:"PHIL 1001",desc:"Write a 1,000-word essay about the ancient philosopher Haddaway's most famous question: \"What is Love?\"",effort:12,slide:1,condition:null},
+  {name:"STAT 1002",desc:"Prove statistically that 73% of all statistics are made up on the spot, including this one.",effort:12,slide:2,condition:"harsh_marking"},
+  {name:"BIO 1003", desc:"Memorize every organ in the human body, then forget them immediately after the final exam.",effort:13,slide:3,condition:null},
+  {name:"SOC 1004", desc:"Observe a group project in the wild and write a report on how exactly one person ends up doing all the work.",effort:13,slide:4,condition:null},
+  {name:"CSCI 2001",desc:"Write code that works perfectly... until the professor runs it.",effort:14,slide:5,condition:null},
+  {name:"MKTG 2002",desc:"Create a marketing campaign convincing people they desperately need something they've lived without for 20 years.",effort:14,slide:6,condition:"high_standards"},
+  {name:"HIST 2003",desc:"Explain a historical event entirely through badly labeled maps and vague dates like \"the late 1800s.\"",effort:15,slide:7,condition:null},
+  {name:"PSYC 2004",desc:"Design an experiment proving that procrastination is actually a legitimate time management strategy.",effort:16,slide:8,condition:null},
 ];
 const EXAM_R5_8 = [
-  {name:"ECON 302",desc:"Explain why textbooks cost $300 using supply and demand curves.",effort:15,blame:"highest",slide:9},
-  {name:"ENGR 401",desc:"Build a project where the math works but the physical object absolutely does not.",effort:15,blame:"highest",slide:10},
-  {name:"ENGL 315",desc:"Write 5,000 words analyzing why the curtains were blue (the author just liked blue).",effort:16,blame:"accuse",slide:11},
-  {name:"CHEM 340",desc:"Mix clear liquids together and explain why the result is somehow purple and mildly alarming.",effort:16,blame:"accuse",slide:12},
-  {name:"BUSN 420",desc:"Analyze why Netflix keeps canceling good shows after one season. Cite your sources.",effort:17,blame:"highest",slide:13},
-  {name:"PHYS 350",desc:"Prove thermodynamics is real by explaining why your dorm room entropy only increases.",effort:17,blame:"accuse",slide:14},
-  {name:"ART 275",desc:"Create a piece of art and write a 3-page explanation of what it 'really' means.",effort:18,blame:"accuse",slide:15},
-  {name:"MUSC 380",desc:"Compose a symphony or just sample Pachelbel's Canon like everybody else does.",effort:21,blame:"highest",slide:16},
+  {name:"MUSC 3001",desc:"Compose a symphony or just sample Pachelbel's Canon like everybody else does.",effort:17,slide:9,condition:null},
+  {name:"ECON 3002",desc:"Explain why textbooks cost $300 using supply and demand curves.",effort:17,slide:10,condition:"calculator_ban"},
+  {name:"ENGL 3003",desc:"Write 5,000 words analyzing why the curtains were blue (hint: the author liked blue).",effort:18,slide:11,condition:null},
+  {name:"CHEM 3004",desc:"Mix clear liquids together and explain why the result is somehow purple and mildly alarming.",effort:19,slide:12,condition:null},
+  {name:"BUSN 4001",desc:"Analyze why Netflix keeps canceling good shows after one season. Cite your sources.",effort:19,slide:13,condition:"plagiarism_detection"},
+  {name:"PHYS 4002",desc:"Prove thermodynamics is real by explaining why your dorm room entropy only increases.",effort:20,slide:14,condition:null},
+  {name:"ART 4003", desc:"Create a piece of art and then write a 3-page explanation of what it really means.",effort:20,slide:15,condition:"high_standards"},
+  {name:"ENGR 4004",desc:"Build a group project where the math works but the physical object absolutely does not.",effort:21,slide:16,condition:null},
 ];
+const CONDITION_LABELS = {
+  harsh_marking:       "Harsh Marking: Even numbers in the effort pile are halved.",
+  high_standards:      "High Standards: Any effort card below 3 counts as 0.",
+  calculator_ban:      "Calculator Ban: -1 effort for every duplicate card in the pile.",
+  plagiarism_detection:"Plagiarism Detection: X2 Copy does not double — it adds +3 effort instead.",
+};
 const ALL_SKILLS = ["Diversity is Our Strength","Personal Responsibility","Realign Priorities","Pull an All Nighter","Round of Coffee","Extend the Deadline","Plagiarize","Curve the Grade","Leave the Group"];
 // Extra Credit cards — V3 new type. Earned by passing via Let It Ride.
 const EXTRA_CREDIT_CARDS = [
@@ -266,28 +272,34 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function jsv(c){return typeof c==='string'?`'${c}'`:c}
 
 function computeEffort(pile, x3x2=false){
-  // X2 stacks multiplicatively with the NEXT numeric card revealed after it.
-  // Two consecutive X2s = x4 on the next numeric card.
-  // X2 as the last card in the pile = scores as 7 (with any accumulated multiplier).
-  // X2 in party pile = 0 (party total ignores non-numeric, so already handled).
+  const condition = G.exam ? G.exam.condition : null;
   const base = x3x2 ? 3 : 2;
   let total = 0;
-  let multiplier = 1; // stacks as X2s chain
+  let multiplier = 1;
   for(let i=0; i<pile.length; i++){
     const c = pile[i];
     const isLast = i === pile.length-1;
     if(c === 'X2'){
-      if(isLast){
-        // Last card X2 counts as 7, applying any accumulated multiplier
-        total += 7 * multiplier;
-        multiplier = 1;
+      if(condition === 'plagiarism_detection'){
+        // X2 Copy adds +3 instead of doubling
+        total += 3 * multiplier; multiplier = 1;
+      } else if(isLast){
+        total += 7 * multiplier; multiplier = 1;
       } else {
-        multiplier *= base; // stack: X2 then X2 = x4
+        multiplier *= base;
       }
     } else if(typeof c === 'number'){
-      total += c * multiplier;
-      multiplier = 1;
+      let val = c;
+      if(condition === 'harsh_marking' && val % 2 === 0) val = Math.floor(val / 2);
+      if(condition === 'high_standards' && val < 3) val = 0;
+      total += val * multiplier; multiplier = 1;
     }
+  }
+  // Calculator Ban: -1 per duplicate value in the pile
+  if(condition === 'calculator_ban'){
+    const counts = {};
+    pile.forEach(c=>{ if(typeof c==='number') counts[c]=(counts[c]||0)+1; });
+    Object.values(counts).forEach(n=>{ if(n>1) total -= (n-1); });
   }
   return total;
 }
@@ -587,6 +599,7 @@ function renderRoundStart(){
         <div class="exam-row"><span class="exam-lbl">Effort Required</span><span class="exam-val text-red">${G.finalReq}</span></div>
         <div class="exam-row"><span class="exam-lbl">Reward (Pass)</span><span class="exam-val text-yellow">Extra Credit card</span></div>
         <div class="exam-row"><span class="exam-lbl">Project Leader</span><span class="exam-val text-purple">${esc(leader.name)}</span></div>
+        ${exam.condition?`<div class="notif bad" style="margin-top:8px"><strong>Assignment Condition:</strong> ${esc(CONDITION_LABELS[exam.condition]||exam.condition)}</div>`:''}
       </div>
     </div>
     <div class="text-muted" style="margin-top:6px">Available skills: ${skillsHtml}</div>
