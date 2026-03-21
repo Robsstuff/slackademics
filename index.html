@@ -408,11 +408,11 @@ function initGame(humanName){
     ],
     leaderIdx:0,
     roundNum:1,
-    deck14:shuffle([...EXAM_R1_4]),
-    deck58:shuffle([...EXAM_R5_8]),
+    examDeck:shuffle([...EXAM_R1_4,...EXAM_R5_8]).slice(0,8).sort((a,b)=>a.effort-b.effort),
     skillDeck:shuffle([...ALL_SKILLS]),
     skillsAvailable:[],
     refillPool:initRefillPool(),
+    showOpponentScores:false,
     nextExamBonus:0,
     exam:null,
     effortPile:[],
@@ -469,7 +469,7 @@ function startRound(){
   // skip eliminated leaders
   let tries=0;
   while(G.players[G.leaderIdx].eliminated&&tries<4){G.leaderIdx=(G.leaderIdx+1)%4;tries++}
-  const raw=G.roundNum<=4?G.deck14[G.roundNum-1]:G.deck58[G.roundNum-5];
+  const raw=G.examDeck[G.roundNum-1];
   G.exam={...raw};
   if(G.nextExamBonus>0){G.exam.effort+=G.nextExamBonus;G.nextExamBonus=0;}
   G.finalReq=G.exam.effort;
@@ -532,7 +532,7 @@ function renderStatusBar(){
     const partyHtml=p.isHuman?`<span class="text-green">${partyTotal(p)}pts</span>`:`<span class="text-muted">?pts</span>`;
     rows+=`<div class="pr${isLeader?' is-leader':''}${expelled?' eliminated':''}">
       <span class="pr-name${p.isHuman?' human':''}">${esc(p.name)}${isLeader?' *':''}</span>
-      <span class="pr-score${score===maxScore&&!expelled?' best':''}">${p.isHuman?score:'?'}</span>
+      <span class="pr-score${score===maxScore&&!expelled?' best':''}">${p.isHuman||G.showOpponentScores?score:'?'}</span>
       ${partyHtml}
       <span class="pr-fails">${failDots}</span>
       <span class="pr-hand">${handHtml}</span>
@@ -548,7 +548,7 @@ function renderStatusBar(){
       ${skillsBadge}${ecBadge}
     </div>
     <div class="player-rows">${rows}</div>
-    <div class="status-hint">* = Project Leader &nbsp;|&nbsp; dots = fail markers &nbsp;|&nbsp; Party pile is face-down — only you can see yours</div>
+    <div class="status-hint">* = Project Leader &nbsp;|&nbsp; dots = fail markers &nbsp;|&nbsp; Party pile is face-down — only you can see yours &nbsp;|&nbsp; <button style="background:none;border:none;color:#7c6ff7;cursor:pointer;font-size:0.78rem;padding:0;text-decoration:underline" onclick="action('toggle_scores')">${G.showOpponentScores?'Hide':'Show'} opponent scores</button></div>
   </div>`;
 }
 
@@ -972,9 +972,11 @@ function doPickRefillPair(idx){
   G.refillPicksLeft--;
   if(G.refillPool.length===0) G.refillPool=initRefillPool();
   if(G.refillPicksLeft<=0){
-    G.phase=G.refillReturnPhase;
+    const returnTo=G.refillReturnPhase;
     G.refillReturnPhase=null;
     G.refillPicksLeft=0;
+    if(returnTo==='_next_round'){ doNextRoundContinue(); return; }
+    G.phase=returnTo;
   }
   render();
 }
@@ -1141,6 +1143,7 @@ function action(name, data){
     case 'pick_leader': doPickLeader(data); break;
     case 'next_round': doNextRound(); break;
     case 'start_second_half': doStartSecondHalf(); break;
+    case 'toggle_scores': G.showOpponentScores=!G.showOpponentScores; render(); break;
     case 'restart': G.phase='title'; render(); break;
   }
 }
@@ -1224,12 +1227,8 @@ function doConfirmParty(none=false){
   G.effortPile=effortPile;
   G.revealIdx=0;
   G.lastCard=effortPile[effortPile.length-1];
-  // V3: check if any player needs a refill after playing cards
-  const refillInterrupted=checkAllRefills('reveal');
-  if(!refillInterrupted){
-    G.phase='reveal';
-    render();
-  }
+  G.phase='reveal';
+  render();
 }
 
 function doRevealNext(){
@@ -1693,10 +1692,15 @@ function doNextRound(){
   clearLog();
   const active=getActive();
   if(active.length<=1){G.phase='end';render();return;}
-  if(G.roundNum===4){doHalftime();return;}
+  if(G.roundNum===4){doHalftime();return;} // halftime rebuilds hands — no refill needed
   G.roundNum++;
   if(G.roundNum>8){G.phase='end';render();return;}
-  // V3: leader rotation — after everyone has led once, current leader picks next
+  // Refill cards between rounds (not at halftime, not during play)
+  const interrupted=checkAllRefills('_next_round');
+  if(!interrupted) doNextRoundContinue();
+}
+
+function doNextRoundContinue(){
   advanceLeader();
   startRound();
 }
